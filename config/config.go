@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"github.com/kelseyhightower/envconfig"
@@ -24,13 +24,20 @@ type Config struct {
 	} `yaml:"traffic_api"`
 }
 
-func loadCfgFile(cfg *Config) {
-	f, _ := ioutil.ReadFile("config.yml")
-	must(yaml.Unmarshal(f, cfg))
+var Cfg Config
+
+func Load() {
+	loadCfgFile()
+	loadEnv()
 }
 
-func loadEnv(cfg *Config) {
-	must(envconfig.Process("", cfg))
+func loadCfgFile() {
+	f, _ := ioutil.ReadFile("config.yml")
+	must(yaml.Unmarshal(f, &Cfg))
+}
+
+func loadEnv() {
+	must(envconfig.Process("", &Cfg))
 }
 
 func must(err error) {

@@ -1,11 +1,12 @@
 package main
 
-import "fmt"
-
-var cfg Config
+import (
+	"sl-monitor/client"
+	"sl-monitor/config"
+)
 
 func main() {
-	loadCfgFile(&cfg)
-	loadEnv(&cfg)
-	fmt.Println(cfg)
+	config.Load()
+
+	client.FetchDepartures()
 }
