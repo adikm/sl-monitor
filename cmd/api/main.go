@@ -1,12 +1,13 @@
 package main
 
 import (
-	"sl-monitor/client"
-	"sl-monitor/config"
+	"sl-monitor/internal/client"
+	"sl-monitor/internal/config"
 )
 
 func main() {
 	config.Load()
 
 	client.FetchDepartures()
+	client.FetchStations()
 }

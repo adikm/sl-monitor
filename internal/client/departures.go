@@ -1,47 +1,18 @@
 package client
 
 import (
-	"bytes"
-	"encoding/json"
-	"encoding/xml"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"sl-monitor/config"
+	"sl-monitor/internal/config"
 )
 
 func FetchDepartures() {
-	request := buildRequest()
-	xmlRequestData, err := xml.Marshal(request)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	resp, err := http.Post(config.Cfg.TrafficAPI.URL, "text/xml", bytes.NewBuffer(xmlRequestData))
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	var result requestResult
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	request := buildDeparturesRequest()
+	result := new(trainsResult)
+	post(&request, &result)
 	fmt.Println(result.trains())
 }
 
-func buildRequest() request {
+func buildDeparturesRequest() request {
 	text := fmt.Sprintf(`<OR>
                                             <AND>
                                                 <GT name="AdvertisedTimeAtLocation"

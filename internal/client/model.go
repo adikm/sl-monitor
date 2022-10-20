@@ -39,10 +39,10 @@ type and struct {
 }
 
 /**
-* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 model
+* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 train announcements model
  */
 
-type requestResult struct {
+type trainsResult struct {
 	Response struct {
 		Result []struct {
 			Trains []Train `json:"TrainAnnouncement"`
@@ -60,6 +60,23 @@ type Destination struct {
 	Name string `json:"LocationName"`
 }
 
-func (r requestResult) trains() []Train {
+func (r trainsResult) trains() []Train {
 	return r.Response.Result[0].Trains
+}
+
+/**
+* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 stations model
+ */
+
+type stationsResult struct {
+	Response struct {
+		Result []struct {
+			Stations []Station `json:"TrainStation"`
+		} `json:"RESULT"`
+	} `json:"RESPONSE"`
+}
+type Station struct {
+	Name           string `json:"AdvertisedLocationName"`
+	Id             string `json:"LocationSignature"`
+	Prognosticated string `json:"Prognosticated"`
 }
