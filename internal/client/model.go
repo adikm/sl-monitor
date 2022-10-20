@@ -76,7 +76,10 @@ type stationsResult struct {
 	} `json:"RESPONSE"`
 }
 type Station struct {
-	Name           string `json:"AdvertisedLocationName"`
-	Id             string `json:"LocationSignature"`
-	Prognosticated string `json:"Prognosticated"`
+	Name string `json:"AdvertisedLocationName"`
+	Id   string `json:"LocationSignature"`
+}
+
+func (r stationsResult) stations() []Station {
+	return r.Response.Result[0].Stations
 }

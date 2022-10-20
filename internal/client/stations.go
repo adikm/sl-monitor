@@ -1,22 +1,30 @@
 package client
 
 import (
-	"fmt"
 	"sl-monitor/internal/config"
 )
 
-func FetchStations() {
+func FetchStations() []Station {
 	request := buildStationsRequest()
 	result := new(stationsResult)
-	post(&request, &result)
-	fmt.Println(result)
+	err := post(&request, &result)
+	if err != nil {
+		return nil
+	}
+	return result.stations()
 }
 
 func buildStationsRequest() request {
 	requestData := request{Login: login{config.Cfg.TrafficAPI.AuthKey}, Query: query{
 		ObjectType:    "TrainStation",
 		SchemaVersion: "1.4",
-		Include:       []string{"LocationSignature", "AdvertisedLocationName", "Prognosticated"},
+		Include:       []string{"LocationSignature", "AdvertisedLocationName"},
+		Filter: filter{And: and{
+			[]equal{
+				{Name: "CountryCode", Value: "SE"},
+			},
+			"",
+		}},
 	}}
 	return requestData
 }

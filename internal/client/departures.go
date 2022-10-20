@@ -5,11 +5,14 @@ import (
 	"sl-monitor/internal/config"
 )
 
-func FetchDepartures() {
+func FetchDepartures() []Train {
 	request := buildDeparturesRequest()
 	result := new(trainsResult)
-	post(&request, &result)
-	fmt.Println(result.trains())
+	err := post(&request, &result)
+	if err != nil {
+		return nil
+	}
+	return result.trains()
 }
 
 func buildDeparturesRequest() request {
@@ -28,9 +31,9 @@ func buildDeparturesRequest() request {
 		OrderBy:       "AdvertisedTimeAtLocation",
 		Include:       []string{"TechnicalTrainIdent", "AdvertisedTimeAtLocation", "EstimatedTimeAtLocation", "Canceled", "Deviation", "ToLocation"},
 		Filter: filter{And: and{
-			[]equal{{
-				Name:  "ActivityType",
-				Value: "avgang"}, {Name: "LocationSignature", Value: "Hnd"},
+			[]equal{
+				{Name: "ActivityType", Value: "avgang"},
+				{Name: "LocationSignature", Value: "Hnd"},
 			},
 			text,
 		}},

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sl-monitor/internal/client"
 	"sl-monitor/internal/config"
 )
@@ -8,6 +9,9 @@ import (
 func main() {
 	config.Load()
 
-	client.FetchDepartures()
-	client.FetchStations()
+	departues := client.FetchDepartures()
+	stations := client.FetchStations()
+	fmt.Println(stations)
+	fmt.Println(departues)
+
 }
