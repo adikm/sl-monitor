@@ -9,8 +9,7 @@ import (
 
 type Config struct {
 	Server struct {
-		Host    string `yaml:"host"`
-		Port    int    `yaml:"port"`
+		Addr    string `yaml:"addr"`
 		Timeout struct {
 			Server int `yaml:"server"`
 			Read   int `yaml:"read"`
@@ -24,20 +23,20 @@ type Config struct {
 	} `yaml:"traffic_api"`
 }
 
-var Cfg Config
-
-func Load() {
-	loadCfgFile()
-	loadEnv()
+func Load(file *string) *Config {
+	var cfg Config
+	loadCfgFile(file, &cfg)
+	loadEnv(&cfg)
+	return &cfg
 }
 
-func loadCfgFile() {
-	f, _ := ioutil.ReadFile("config.yml")
-	must(yaml.Unmarshal(f, &Cfg))
+func loadCfgFile(file *string, c *Config) {
+	f, _ := ioutil.ReadFile(*file)
+	must(yaml.Unmarshal(f, c))
 }
 
-func loadEnv() {
-	must(envconfig.Process("", &Cfg))
+func loadEnv(c *Config) {
+	must(envconfig.Process("", c))
 }
 
 func must(err error) {

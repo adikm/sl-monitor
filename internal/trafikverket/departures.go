@@ -1,12 +1,11 @@
-package client
+package trafikverket
 
 import (
 	"fmt"
-	"sl-monitor/internal/config"
 )
 
-func FetchDepartures() []Train {
-	request := buildDeparturesRequest()
+func FetchDepartures(authKey string) []Train {
+	request := buildDeparturesRequest(authKey)
 	result := new(trainsResult)
 	err := post(&request, &result)
 	if err != nil {
@@ -15,7 +14,7 @@ func FetchDepartures() []Train {
 	return result.trains()
 }
 
-func buildDeparturesRequest() request {
+func buildDeparturesRequest(authKey string) request {
 	text := fmt.Sprintf(`<OR>
                                             <AND>
                                                 <GT name="AdvertisedTimeAtLocation"
@@ -25,7 +24,7 @@ func buildDeparturesRequest() request {
                                             </AND>
                                             <GT name="EstimatedTimeAtLocation" value="$now"/>
                                         </OR>`)
-	requestData := request{Login: login{config.Cfg.TrafficAPI.AuthKey}, Query: query{
+	requestData := request{Login: login{authKey}, Query: query{
 		ObjectType:    "TrainAnnouncement",
 		SchemaVersion: "1.6",
 		OrderBy:       "AdvertisedTimeAtLocation",

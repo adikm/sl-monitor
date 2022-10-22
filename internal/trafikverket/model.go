@@ -1,4 +1,4 @@
-package client
+package trafikverket
 
 import (
 	"encoding/xml"

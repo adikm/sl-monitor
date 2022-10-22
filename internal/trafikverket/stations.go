@@ -1,21 +1,17 @@
-package client
+package trafikverket
 
-import (
-	"sl-monitor/internal/config"
-)
-
-func FetchStations() []Station {
-	request := buildStationsRequest()
+func FetchStations(authKey string) ([]Station, error) {
+	request := buildStationsRequest(authKey)
 	result := new(stationsResult)
 	err := post(&request, &result)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return result.stations()
+	return result.stations(), nil
 }
 
-func buildStationsRequest() request {
-	requestData := request{Login: login{config.Cfg.TrafficAPI.AuthKey}, Query: query{
+func buildStationsRequest(authKey string) request {
+	requestData := request{Login: login{authKey}, Query: query{
 		ObjectType:    "TrainStation",
 		SchemaVersion: "1.4",
 		Include:       []string{"LocationSignature", "AdvertisedLocationName"},
