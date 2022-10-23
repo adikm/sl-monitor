@@ -1,13 +1,26 @@
 package trafikverket
 
+import "time"
+
+var cachedStation struct {
+	stations []Station
+	updated  time.Time
+}
+
 func FetchStations(authKey string) ([]Station, error) {
-	request := buildStationsRequest(authKey)
-	result := new(stationsResult)
-	err := post(&request, &result)
-	if err != nil {
-		return nil, err
+	accessedMoreThan24Hours := time.Now().Sub(cachedStation.updated).Hours() > 24
+	if accessedMoreThan24Hours {
+		request := buildStationsRequest(authKey)
+		result := new(stationsResult)
+		err := post(&request, &result)
+		if err != nil {
+			return nil, err
+		}
+		cachedStation.stations = result.stations()
+		cachedStation.updated = time.Now()
 	}
-	return result.stations(), nil
+
+	return cachedStation.stations, nil
 }
 
 func buildStationsRequest(authKey string) request {
