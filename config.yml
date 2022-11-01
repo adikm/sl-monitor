@@ -6,5 +6,10 @@ server:
     write: 10
     idle: 5
 traffic_api:
-  authKey:
+  authKey: # env
   url: https://api.trafikinfo.trafikverket.se/v2/data.json
+mail:
+  from: adrian-biadki@o2.pl
+  password: # env
+  smtpHost: poczta.o2.pl
+  smtpPort: 465

@@ -21,6 +21,12 @@ type Config struct {
 		AuthKey string `yaml:"authKey" envconfig:"TRAFFIC_API_AUTH_KEY"`
 		URL     string `yaml:"url"`
 	} `yaml:"traffic_api"`
+	Mail struct {
+		From     string `yaml:"from"`
+		Password string `yaml:"password" envconfig:"MAIL_PASSWORD"`
+		SmtpHost string `yaml:"smtpHost"`
+		SmtpPort int    `yaml:"smtpPort"`
+	} `yaml:"mail"`
 }
 
 func Load(file *string) *Config {

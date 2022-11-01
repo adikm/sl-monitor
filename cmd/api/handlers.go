@@ -18,7 +18,6 @@ func (app *application) status(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 		return
 	}
-
 	err = response.JSON(w, http.StatusOK, stations)
 	if err != nil {
 		app.serverError(w, r, err)
