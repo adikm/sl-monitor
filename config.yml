@@ -5,6 +5,8 @@ server:
     read: 15
     write: 10
     idle: 5
+database:
+  name: test.db
 traffic_api:
   authKey: # env
   url: https://api.trafikinfo.trafikverket.se/v2/data.json

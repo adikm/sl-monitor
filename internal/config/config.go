@@ -17,6 +17,9 @@ type Config struct {
 			Idle   int `yaml:"idle"`
 		} `yaml:"timeout"`
 	} `yaml:"server"`
+	Database struct {
+		Name string `yaml:"name"`
+	}
 	TrafficAPI struct {
 		AuthKey string `yaml:"authKey" envconfig:"TRAFFIC_API_AUTH_KEY"`
 		URL     string `yaml:"url"`
