@@ -10,16 +10,20 @@ import (
 	"log"
 )
 
-func Connect(dbName string) *sql.DB {
+type DB struct {
+	*sql.DB
+}
+
+func Connect(dbName string) *DB {
 	db, err := sql.Open("sqlite3", "./"+dbName)
 	if err != nil {
 		log.Fatal("Unable to connect to db ", err)
 	}
-	return db
+	return &DB{db}
 }
 
-func Migrate(db *sql.DB, dbName string) {
-	instance, err := sqlite3.WithInstance(db, &sqlite3.Config{DatabaseName: dbName})
+func Migrate(db *DB, dbName string) {
+	instance, err := sqlite3.WithInstance(db.DB, &sqlite3.Config{DatabaseName: dbName})
 	if err != nil {
 		log.Fatal("Unable to connect to db ", err)
 	}

@@ -1,21 +1,20 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"log"
 	"os"
 	"sl-monitor/internal/config"
-	"sl-monitor/internal/database"
-	"sl-monitor/internal/server"
+	database "sl-monitor/internal/database"
+	"sl-monitor/internal/server/request"
 	"sl-monitor/internal/smtp"
 )
 
 type application struct {
-	logger   *log.Logger
-	config   *config.Config
-	mailer   *smtp.Mailer
-	database *sql.DB
+	logger *log.Logger
+	config *config.Config
+	mailer *smtp.Mailer
+	db     *database.DB
 }
 
 func main() {
@@ -26,12 +25,12 @@ func main() {
 	db := prepareDatabase(cfg.Database.Name)
 	defer db.Close()
 
-	app := &application{logger: logger, config: cfg, mailer: mailer, database: db}
+	app := &application{logger: logger, config: cfg, mailer: mailer, db: db}
 
 	logger.Printf("starting server on %s", cfg.Server.Addr)
 
 	app.routes()
-	err := server.Run(cfg.Server.Addr)
+	err := request.Run(cfg.Server.Addr)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -39,7 +38,7 @@ func main() {
 	logger.Print("server stopped")
 }
 
-func prepareDatabase(dbName string) *sql.DB {
+func prepareDatabase(dbName string) *database.DB {
 	db := database.Connect(dbName)
 	database.Migrate(db, dbName)
 	return db
