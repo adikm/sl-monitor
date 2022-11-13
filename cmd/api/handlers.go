@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"sl-monitor/internal"
 	request "sl-monitor/internal/server"
 	"sl-monitor/internal/server/response"
 	"sl-monitor/internal/trafikverket"
@@ -33,8 +34,9 @@ func (app *application) createNotification(w http.ResponseWriter, r *http.Reques
 	}
 
 	var input struct {
-		Email     string    `json:"email"`
-		Timestamp time.Time `json:"timestamp"`
+		Email     string               `json:"email"`
+		Timestamp time.Time            `json:"timestamp"`
+		Weekdays  internal.WeekdaysSum `json:"weekdays"`
 	}
 
 	err := request.DecodeJSON(r, &input)
@@ -43,7 +45,7 @@ func (app *application) createNotification(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = app.db.CreateNotification(input.Email, input.Timestamp)
+	err = app.db.CreateNotification(input.Email, input.Timestamp, input.Weekdays)
 
 	if err != nil {
 		app.serverError(w, r, err)
