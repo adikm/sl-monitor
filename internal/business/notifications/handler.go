@@ -1,25 +1,24 @@
 package notifications
 
 import (
-	"fmt"
 	"net/http"
 	"sl-monitor/internal"
 	request "sl-monitor/internal/server"
+	"sl-monitor/internal/server/response"
 	"time"
 )
 
 type NotificationHandler struct {
-	Notifications *NotificationStore
-	common        *internal.JsonCommon
+	Notifications NotificationStore
 }
 
-func NewHandler(store *NotificationStore, common *internal.JsonCommon) *NotificationHandler {
-	return &NotificationHandler{store, common}
+func NewHandler(store NotificationStore) *NotificationHandler {
+	return &NotificationHandler{store}
 }
 
 func (nh *NotificationHandler) CreateNotification(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		nh.common.MethodNotAllowed(w, r)
+		response.MethodNotAllowed(w, r)
 		return
 	}
 
@@ -31,17 +30,20 @@ func (nh *NotificationHandler) CreateNotification(w http.ResponseWriter, r *http
 
 	err := request.DecodeJSON(r, &input)
 	if err != nil {
-		nh.common.BadRequest(w, r, err)
+		response.BadRequest(w, r, err)
 		return
 	}
 
-	newNot, err := nh.Notifications.Create(input.Email, input.Timestamp, input.Weekdays)
-
-	fmt.Println(newNot)
-
+	id, err := nh.Notifications.Create(input.Email, input.Timestamp, input.Weekdays)
 	if err != nil {
-		nh.common.ServerError(w, r, err)
+		response.ServerError(w, r, err)
 		return
 	}
-	w.WriteHeader(http.StatusNoContent)
+
+	n := &Notification{id, input.Email, input.Timestamp, input.Weekdays.AsWeekdays()}
+
+	err = response.JSON(w, http.StatusOK, n)
+	if err != nil {
+		response.ServerError(w, r, err)
+	}
 }
