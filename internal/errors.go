@@ -10,7 +10,11 @@ import (
 )
 
 type JsonCommon struct {
-	Logger *log.Logger
+	logger *log.Logger
+}
+
+func NewJsonCommon(logger *log.Logger) *JsonCommon {
+	return &JsonCommon{logger}
 }
 
 func (common *JsonCommon) ErrorMessage(w http.ResponseWriter, status int, message string, headers http.Header) {
@@ -18,14 +22,14 @@ func (common *JsonCommon) ErrorMessage(w http.ResponseWriter, status int, messag
 
 	err := response.JSONWithHeaders(w, status, map[string]string{"Error": message}, headers)
 	if err != nil {
-		common.Logger.Print(err)
+		common.logger.Print(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
 
 func (common *JsonCommon) ServerError(w http.ResponseWriter, r *http.Request, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-	common.Logger.Print(trace)
+	common.logger.Print(trace)
 
 	message := "The server encountered a problem and could not process your request"
 	common.ErrorMessage(w, http.StatusInternalServerError, message, nil)
