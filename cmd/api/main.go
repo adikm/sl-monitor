@@ -9,6 +9,7 @@ import (
 	"sl-monitor/internal/config"
 	database "sl-monitor/internal/database"
 	customlogger "sl-monitor/internal/logger"
+	auth2 "sl-monitor/internal/server/auth"
 	"sl-monitor/internal/server/request"
 	"sl-monitor/internal/smtp"
 )
@@ -31,12 +32,14 @@ func main() {
 
 	notificationsHandler := prepareNotificationHandler(db)
 	stationsHandler := stations.NewHandler(cfg)
+	authHandler := auth2.NewHandler(cfg)
 
 	logger.Printf("starting server on %s", cfg.Server.Addr)
 
 	DefaultRoutes()
 	notifications.Routes(notificationsHandler)
 	stations.Routes(stationsHandler)
+	auth2.Routes(authHandler)
 
 	err := request.Run(cfg.Server.Addr)
 	if err != nil {

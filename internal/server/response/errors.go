@@ -39,3 +39,7 @@ func MethodNotAllowed(w http.ResponseWriter, r *http.Request) {
 func BadRequest(w http.ResponseWriter, r *http.Request, err error) {
 	ErrorMessage(w, http.StatusBadRequest, err.Error(), nil)
 }
+
+func Unauthorized(w http.ResponseWriter, r *http.Request) {
+	ErrorMessage(w, http.StatusUnauthorized, "Not logged in", nil)
+}

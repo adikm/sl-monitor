@@ -1,7 +1,10 @@
 package notifications
 
-import "net/http"
+import (
+	"net/http"
+	"sl-monitor/internal/server/auth"
+)
 
 func Routes(nh *NotificationHandler) {
-	http.HandleFunc("/notifications", nh.CreateNotification)
+	http.HandleFunc("/notifications", auth.MustBeLoggedIn(nh.CreateNotification))
 }
