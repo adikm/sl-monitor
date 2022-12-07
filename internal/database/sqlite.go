@@ -14,7 +14,7 @@ type sqlite struct {
 	dbName string
 }
 
-func NewSqlite(dbName string) *sqlite {
+func NewSqlite(dbName string) Database {
 	return &sqlite{dbName}
 }
 

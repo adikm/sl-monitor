@@ -6,6 +6,7 @@ import (
 	"log"
 	"sl-monitor/internal/business/notifications"
 	"sl-monitor/internal/business/stations"
+	"sl-monitor/internal/business/stations/trafikverket"
 	"sl-monitor/internal/config"
 	database "sl-monitor/internal/database"
 	customlogger "sl-monitor/internal/logger"
@@ -31,7 +32,7 @@ func main() {
 	//app := &application{logger: logger, config: cfg, mailer: mailer, jsonCommon: jsonCommon}
 
 	notificationsHandler := prepareNotificationHandler(db)
-	stationsHandler := stations.NewHandler(cfg)
+	stationsHandler := stations.NewHandler(cfg, trafikverket.NewAPIService())
 	authHandler := auth2.NewHandler(cfg)
 
 	logger.Printf("starting server on %s", cfg.Server.Addr)

@@ -1,18 +1,20 @@
 package trafikverket
 
-import "time"
+import (
+	"time"
+)
 
 var cachedStation struct {
 	stations []Station
 	updated  time.Time
 }
 
-func FetchStations(authKey string) ([]Station, error) {
+func (s *APIService) FetchStations(authKey string) ([]Station, error) {
 	accessedMoreThan24Hours := time.Now().Sub(cachedStation.updated).Hours() > 24
 	if accessedMoreThan24Hours {
 		request := buildStationsRequest(authKey)
 		result := new(stationsResult)
-		err := post(&request, &result)
+		err := s.remoteClient.post(&request, &result)
 		if err != nil {
 			return nil, err
 		}

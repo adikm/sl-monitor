@@ -5,11 +5,18 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
-func post(r *request, dst interface{}) error {
+type client interface {
+	post(r *request, dst interface{}) error
+}
+
+type remoteClient struct {
+}
+
+func (_ *remoteClient) post(r *request, dst interface{}) error {
 	requestBody, err := xml.Marshal(r)
 	if err != nil {
 		return fmt.Errorf("couldn't prepare request body: %w", err)
@@ -22,7 +29,7 @@ func post(r *request, dst interface{}) error {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("trafikverket POST request failed when reading body: %w", err)
 	}

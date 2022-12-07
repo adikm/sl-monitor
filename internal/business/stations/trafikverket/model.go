@@ -75,6 +75,7 @@ type stationsResult struct {
 		} `json:"RESULT"`
 	} `json:"RESPONSE"`
 }
+
 type Station struct {
 	Name string `json:"AdvertisedLocationName"`
 	Id   string `json:"LocationSignature"`

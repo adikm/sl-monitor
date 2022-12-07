@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-func FetchDepartures(authKey string) []Train {
+func (s *APIService) FetchDepartures(authKey string) []Train {
 	request := buildDeparturesRequest(authKey)
 	result := new(trainsResult)
-	err := post(&request, &result)
+	err := s.remoteClient.post(&request, &result)
 	if err != nil {
 		return nil
 	}
