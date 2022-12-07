@@ -4,14 +4,14 @@ import (
 	"fmt"
 )
 
-func (s *APIService) FetchDepartures(authKey string) []Train {
+func (s *APIService) FetchDepartures(authKey string) ([]Train, error) { // TODO, not yet used
 	request := buildDeparturesRequest(authKey)
 	result := new(trainsResult)
 	err := s.remoteClient.post(&request, &result)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return result.trains()
+	return result.trains(), nil
 }
 
 func buildDeparturesRequest(authKey string) request {

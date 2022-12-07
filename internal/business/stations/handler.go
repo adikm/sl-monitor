@@ -8,12 +8,12 @@ import (
 )
 
 type StationHandler struct {
-	config              *config.Config
-	trafikverketSerivce trafikverket.Service
+	config  *config.Config
+	service trafikverket.Service
 }
 
-func NewHandler(config *config.Config, trafikverketSerivce trafikverket.Service) *StationHandler {
-	return &StationHandler{config, trafikverketSerivce}
+func NewHandler(config *config.Config, service trafikverket.Service) *StationHandler {
+	return &StationHandler{config, service}
 }
 
 func (sh *StationHandler) FetchStations(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +22,7 @@ func (sh *StationHandler) FetchStations(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	stations, err := sh.trafikverketSerivce.FetchStations(sh.config.TrafficAPI.AuthKey)
+	stations, err := sh.service.FetchStations(sh.config.TrafficAPI.AuthKey)
 
 	if err != nil {
 		response.ServerError(w, r, err)

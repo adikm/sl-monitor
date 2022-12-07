@@ -16,7 +16,7 @@ var once sync.Once
 
 func GetInstance() *logger {
 	once.Do(func() {
-		logge = createLogger("mylogger.log")
+		logge = createLogger("logging.log")
 	})
 	return logge
 }

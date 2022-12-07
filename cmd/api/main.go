@@ -3,23 +3,15 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"log"
 	"sl-monitor/internal/business/notifications"
 	"sl-monitor/internal/business/stations"
 	"sl-monitor/internal/business/stations/trafikverket"
 	"sl-monitor/internal/config"
-	database "sl-monitor/internal/database"
+	"sl-monitor/internal/database"
 	customlogger "sl-monitor/internal/logger"
-	auth2 "sl-monitor/internal/server/auth"
+	"sl-monitor/internal/server/auth"
 	"sl-monitor/internal/server/request"
-	"sl-monitor/internal/smtp"
 )
-
-type application struct {
-	logger *log.Logger
-	config *config.Config
-	mailer *smtp.Mailer
-}
 
 func main() {
 	cfg := loadCfg()
@@ -29,18 +21,16 @@ func main() {
 	db := prepareDatabase(cfg.Database.Name)
 	defer db.Close()
 
-	//app := &application{logger: logger, config: cfg, mailer: mailer, jsonCommon: jsonCommon}
-
 	notificationsHandler := prepareNotificationHandler(db)
 	stationsHandler := stations.NewHandler(cfg, trafikverket.NewAPIService())
-	authHandler := auth2.NewHandler(cfg)
+	authHandler := auth.NewHandler(cfg)
 
 	logger.Printf("starting server on %s", cfg.Server.Addr)
 
 	DefaultRoutes()
 	notifications.Routes(notificationsHandler)
 	stations.Routes(stationsHandler)
-	auth2.Routes(authHandler)
+	auth.Routes(authHandler)
 
 	err := request.Run(cfg.Server.Addr)
 	if err != nil {
