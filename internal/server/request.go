@@ -6,8 +6,20 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sl-monitor/internal/server/response"
 	"strings"
 )
+
+func MustBe(method string, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != method {
+			response.MethodNotAllowed(w, r)
+			return
+		}
+		next(w, r)
+	}
+
+}
 
 func DecodeJSON(r *http.Request, dst interface{}) error {
 	dec := json.NewDecoder(r.Body)

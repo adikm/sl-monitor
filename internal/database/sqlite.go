@@ -54,3 +54,5 @@ func (sqlite sqlite) Migrate(db *sql.DB) error {
 	}
 	return nil
 }
+
+var _ Database = &sqlite{}

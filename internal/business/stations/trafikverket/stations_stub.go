@@ -9,3 +9,5 @@ func (s *ServiceStub) FetchStations(authKey string) ([]Station, error) {
 func (s *ServiceStub) FetchDepartures(authKey string) ([]Train, error) {
 	return []Train{}, nil
 }
+
+var _ Service = &ServiceStub{}

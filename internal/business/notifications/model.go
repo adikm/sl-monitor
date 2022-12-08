@@ -6,11 +6,11 @@ import (
 )
 
 type Store interface {
-	Create(email string, timestamp time.Time, weekdays internal.WeekdaysSum) (int64, error)
+	Create(email string, timestamp time.Time, weekdays internal.WeekdaysSum) (int, error)
 }
 
 type Notification struct {
-	id        int64
+	id        int
 	email     string
 	timestamp time.Time
 	weekdays  []internal.Weekday

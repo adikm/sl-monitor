@@ -12,3 +12,5 @@ type APIService struct {
 func NewAPIService() *APIService {
 	return &APIService{remoteClient: &remoteClient{}}
 }
+
+var _ Service = &APIService{}

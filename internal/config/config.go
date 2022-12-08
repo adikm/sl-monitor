@@ -7,29 +7,37 @@ import (
 	"log"
 )
 
+type server struct {
+	Addr    string `yaml:"addr"`
+	Timeout struct {
+		Server int `yaml:"server"`
+		Read   int `yaml:"read"`
+		Write  int `yaml:"write"`
+		Idle   int `yaml:"idle"`
+	} `yaml:"timeout"`
+}
+
+type database struct {
+	Name string `yaml:"name"`
+}
+
+type trafficAPI struct {
+	AuthKey string `yaml:"authKey" envconfig:"TRAFFIC_API_AUTH_KEY"`
+	URL     string `yaml:"url"`
+}
+
+type mail struct {
+	From     string `yaml:"from"`
+	Password string `yaml:"password" envconfig:"MAIL_PASSWORD"`
+	SmtpHost string `yaml:"smtpHost"`
+	SmtpPort int    `yaml:"smtpPort"`
+}
+
 type Config struct {
-	Server struct {
-		Addr    string `yaml:"addr"`
-		Timeout struct {
-			Server int `yaml:"server"`
-			Read   int `yaml:"read"`
-			Write  int `yaml:"write"`
-			Idle   int `yaml:"idle"`
-		} `yaml:"timeout"`
-	} `yaml:"server"`
-	Database struct {
-		Name string `yaml:"name"`
-	}
-	TrafficAPI struct {
-		AuthKey string `yaml:"authKey" envconfig:"TRAFFIC_API_AUTH_KEY"`
-		URL     string `yaml:"url"`
-	} `yaml:"traffic_api"`
-	Mail struct {
-		From     string `yaml:"from"`
-		Password string `yaml:"password" envconfig:"MAIL_PASSWORD"`
-		SmtpHost string `yaml:"smtpHost"`
-		SmtpPort int    `yaml:"smtpPort"`
-	} `yaml:"mail"`
+	Server     server     `yaml:"server"`
+	Database   database   `yaml:"database"`
+	TrafficAPI trafficAPI `yaml:"traffic_api"`
+	Mail       mail       `yaml:"mail"`
 }
 
 func Load(file *string) *Config {

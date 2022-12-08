@@ -17,11 +17,6 @@ func NewHandler(config *config.Config, service trafikverket.Service) *Handler {
 }
 
 func (sh *Handler) FetchStations(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		response.MethodNotAllowed(w, r)
-		return
-	}
-
 	stations, err := sh.service.FetchStations(sh.config.TrafficAPI.AuthKey)
 
 	if err != nil {

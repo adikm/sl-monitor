@@ -42,3 +42,5 @@ func (_ *remoteClient) post(r *request, dst interface{}) error {
 	}
 	return nil
 }
+
+var _ client = &remoteClient{}

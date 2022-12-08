@@ -17,11 +17,6 @@ func NewHandler(store Store) *Handler {
 }
 
 func (nh *Handler) Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		response.MethodNotAllowed(w, r)
-		return
-	}
-
 	var input struct {
 		Email     string               `json:"email"`
 		Timestamp time.Time            `json:"timestamp"`

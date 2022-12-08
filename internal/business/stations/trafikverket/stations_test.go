@@ -44,3 +44,5 @@ func (_ *remoteClientStub) post(r *request, dst interface{}) error {
 	json.Unmarshal([]byte(stubbedData), &dst)
 	return nil
 }
+
+var _ client = &remoteClientStub{}
