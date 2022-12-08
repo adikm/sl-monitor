@@ -8,16 +8,16 @@ import (
 	"time"
 )
 
-type NotificationHandler struct {
-	Notifications NotificationStore
+type Handler struct {
+	Notifications Store
 }
 
-func NewHandler(store NotificationStore) *NotificationHandler {
-	return &NotificationHandler{store}
+func NewHandler(store Store) *Handler {
+	return &Handler{store}
 }
 
-func (nh *NotificationHandler) CreateNotification(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+func (nh *Handler) Create(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
 		response.MethodNotAllowed(w, r)
 		return
 	}

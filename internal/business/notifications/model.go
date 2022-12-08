@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type NotificationStore interface {
+type Store interface {
 	Create(email string, timestamp time.Time, weekdays internal.WeekdaysSum) (int64, error)
 }
 

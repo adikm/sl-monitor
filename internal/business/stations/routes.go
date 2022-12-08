@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func Routes(sh *StationHandler) {
+func Routes(sh *Handler) {
 
 	http.HandleFunc("/stations", sh.FetchStations)
 

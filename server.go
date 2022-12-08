@@ -1,4 +1,4 @@
-package request
+package main
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func Run(addr string) error {
+func runServer(addr string) error {
 	srv := &http.Server{
 		Addr:         addr,
 		ReadTimeout:  10 * time.Second,

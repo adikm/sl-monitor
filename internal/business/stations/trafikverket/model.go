@@ -6,7 +6,7 @@ import (
 )
 
 /***
-* 𝗥𝗘𝗤𝗨𝗘𝗦𝗧 model
+* 𝗥𝗘𝗤𝗨𝗘𝗦𝗧 API model
  */
 type request struct {
 	XMLName xml.Name `xml:"REQUEST"`
@@ -39,7 +39,7 @@ type and struct {
 }
 
 /**
-* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 train announcements model
+* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 API train announcements model
  */
 
 type trainsResult struct {
@@ -65,7 +65,7 @@ func (r trainsResult) trains() []Train {
 }
 
 /**
-* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 stations model
+* 𝗥𝗘𝗦𝗣𝗢𝗡𝗦𝗘 API stations model
  */
 
 type stationsResult struct {

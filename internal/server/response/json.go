@@ -10,20 +10,15 @@ func JSON(w http.ResponseWriter, status int, data any) error {
 }
 
 func JSONWithHeaders(w http.ResponseWriter, status int, data any, headers http.Header) error {
-	jsonTxt, err := json.MarshalIndent(data, "", "\t")
-	if err != nil {
-		return err
-	}
-
-	jsonTxt = append(jsonTxt, '\n')
-
 	for key, value := range headers {
 		w.Header()[key] = value
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	w.Write(jsonTxt)
 
-	return nil
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "\t")
+	return encoder.Encode(data)
+
 }

@@ -10,6 +10,11 @@ import (
 	"log"
 )
 
+type Database interface {
+	Connect() (*sql.DB, error)
+	Migrate(db *sql.DB) error
+}
+
 type sqlite struct {
 	dbName string
 }
@@ -18,22 +23,25 @@ func NewSqlite(dbName string) Database {
 	return &sqlite{dbName}
 }
 
-func (sqlite sqlite) Connect() *sql.DB {
+func (sqlite sqlite) Connect() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./"+sqlite.dbName)
 	if err != nil {
-		log.Fatal("Unable to connect to db ", err)
+		log.Print("Unable to connect to db")
+		return nil, err
 	}
-	return db
+	return db, nil
 }
 
-func (sqlite sqlite) Migrate(db *sql.DB) {
+func (sqlite sqlite) Migrate(db *sql.DB) error {
 	instance, err := sqlite3.WithInstance(db, &sqlite3.Config{DatabaseName: sqlite.dbName})
 	if err != nil {
-		log.Fatal("Unable to connect to db ", err)
+		log.Print("Unable to connect to db")
+		return err
 	}
 	migrator, err := migrate.NewWithDatabaseInstance("file://assets/migrations", sqlite.dbName, instance)
 	if err != nil {
-		log.Fatal("Unable to prepare migrations ", err)
+		log.Print("Unable to prepare migrations")
+		return err
 	}
 
 	err = migrator.Up()
@@ -41,6 +49,8 @@ func (sqlite sqlite) Migrate(db *sql.DB) {
 	case errors.Is(err, migrate.ErrNoChange):
 		break
 	case err != nil:
-		log.Fatal("Unable to migrate ", err)
+		log.Print("Unable to migrate")
+		return err
 	}
+	return nil
 }

@@ -7,16 +7,16 @@ import (
 	"sl-monitor/internal/server/response"
 )
 
-type StationHandler struct {
+type Handler struct {
 	config  *config.Config
 	service trafikverket.Service
 }
 
-func NewHandler(config *config.Config, service trafikverket.Service) *StationHandler {
-	return &StationHandler{config, service}
+func NewHandler(config *config.Config, service trafikverket.Service) *Handler {
+	return &Handler{config, service}
 }
 
-func (sh *StationHandler) FetchStations(w http.ResponseWriter, r *http.Request) {
+func (sh *Handler) FetchStations(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		response.MethodNotAllowed(w, r)
 		return

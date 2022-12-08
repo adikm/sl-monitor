@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-type notificationStore struct {
+type NotificationStore struct {
 	*sql.DB
 }
 
-func NewStore(db *sql.DB) NotificationStore {
-	return &notificationStore{db}
+func NewStore(db *sql.DB) *NotificationStore {
+	return &NotificationStore{db}
 }
 
-func (h *notificationStore) Create(email string, timestamp time.Time, weekdays internal.WeekdaysSum) (int64, error) {
+func (h *NotificationStore) Create(email string, timestamp time.Time, weekdays internal.WeekdaysSum) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 

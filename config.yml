@@ -8,10 +8,10 @@ server:
 database:
   name: test.db
 traffic_api:
-  authKey: # env
+  authKey: # env TRAFFIC_API_AUTH_KEY
   url: https://api.trafikinfo.trafikverket.se/v2/data.json
 mail:
   from: adrian-biadki@o2.pl
-  password: # env
+  password: # env MAIL_PASSWORD
   smtpHost: poczta.o2.pl
   smtpPort: 465

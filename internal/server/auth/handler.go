@@ -28,7 +28,7 @@ var users = map[string]string{ // TODO get rid
 }
 
 func (ah *AuthHandler) login(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		response.MethodNotAllowed(w, r)
 		return
 	}
