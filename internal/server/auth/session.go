@@ -2,11 +2,12 @@ package auth
 
 import "time"
 
-var sessions = map[string]session{}
+var Sessions = map[string]session{}
 
 type session struct {
 	Username string
 	Expiry   time.Time
+	UserId   int
 }
 
 func (s session) IsExpired() bool {

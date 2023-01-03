@@ -6,12 +6,15 @@ import (
 )
 
 type Store interface {
-	Create(email string, timestamp time.Time, weekdays internal.WeekdaysSum) (int, error)
+	Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int) (int, error)
+	FindByUserId(userId int) (*[]Notification, error)
 }
 
 type Notification struct {
-	id        int
-	email     string
-	timestamp time.Time
-	weekdays  []internal.Weekday
+	Id        int                `json:"id"`
+	Timestamp time.Time          `json:"timestamp"`
+	Weekdays  []internal.Weekday `json:"weekdays"`
+	UserId    int                `json:"userId"`
 }
+
+var _ Store = &NotificationStore{}

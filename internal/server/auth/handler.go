@@ -51,8 +51,9 @@ func (ah *AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	sessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(120 * time.Second)
-	sessions[sessionToken] = session{
+	Sessions[sessionToken] = session{
 		Username: creds.Username,
+		UserId:   123, // TODO
 		Expiry:   expiresAt,
 	}
 
@@ -77,7 +78,7 @@ func (ah *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	sessionToken := c.Value
 
-	delete(sessions, sessionToken)
+	delete(Sessions, sessionToken)
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session_token",
