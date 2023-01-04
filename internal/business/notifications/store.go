@@ -40,7 +40,30 @@ func (h *NotificationStore) FindByUserId(userId int) (*[]Notification, error) {
 	query := "SELECT * FROM notifications WHERE user_id = $1"
 
 	result, err := h.QueryContext(ctx, query, userId)
+	if err != nil {
+		return nil, err
+	}
+	notifications := parseNotificationRows(result)
 
+	return &notifications, nil
+}
+
+func (h *NotificationStore) FindAll(weekday internal.Weekday) ([]Notification, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	query := "SELECT * FROM notifications WHERE weekdays & $1"
+
+	result, err := h.QueryContext(ctx, query, weekday)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return parseNotificationRows(result), nil
+}
+
+func parseNotificationRows(result *sql.Rows) []Notification {
 	var notifications []Notification
 
 	for result.Next() {
@@ -52,9 +75,5 @@ func (h *NotificationStore) FindByUserId(userId int) (*[]Notification, error) {
 		n.Weekdays = internal.WeekdaysSum(weekdays).AsWeekdays()
 		notifications = append(notifications, n)
 	}
-
-	if err != nil {
-		return nil, err
-	}
-	return &notifications, err
+	return notifications
 }
