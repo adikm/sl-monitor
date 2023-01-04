@@ -18,7 +18,7 @@ func (s *Scheduler) DoIt() {
 	if err != nil {
 
 	}
-	for _, n := range result {
+	for _, n := range *result {
 		now := time.Now()
 		executionDate := time.Date(now.Year(), now.Month(), now.Day(), n.Timestamp.Hour(), n.Timestamp.Minute(), 0, 0, time.Local)
 		go s.notify(n, executionDate)

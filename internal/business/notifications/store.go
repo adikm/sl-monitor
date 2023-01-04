@@ -3,7 +3,6 @@ package notifications
 import (
 	"context"
 	"database/sql"
-	"log"
 	"sl-monitor/internal"
 	"time"
 )
@@ -43,12 +42,11 @@ func (h *NotificationStore) FindByUserId(userId int) (*[]Notification, error) {
 	if err != nil {
 		return nil, err
 	}
-	notifications := parseNotificationRows(result)
 
-	return &notifications, nil
+	return parseNotificationRows(result)
 }
 
-func (h *NotificationStore) FindAll(weekday internal.Weekday) ([]Notification, error) {
+func (h *NotificationStore) FindAll(weekday internal.Weekday) (*[]Notification, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
@@ -60,20 +58,20 @@ func (h *NotificationStore) FindAll(weekday internal.Weekday) ([]Notification, e
 		return nil, err
 	}
 
-	return parseNotificationRows(result), nil
+	return parseNotificationRows(result)
 }
 
-func parseNotificationRows(result *sql.Rows) []Notification {
+func parseNotificationRows(result *sql.Rows) (*[]Notification, error) {
 	var notifications []Notification
-
+	var err error
 	for result.Next() {
 		var n Notification
 		var weekdays int
-		if err := result.Scan(&n.Id, &n.Timestamp, &n.UserId, &weekdays); err != nil {
-			log.Println(err.Error())
+		if err = result.Scan(&n.Id, &n.Timestamp, &n.UserId, &weekdays); err != nil {
+			break
 		}
 		n.Weekdays = internal.WeekdaysSum(weekdays).AsWeekdays()
 		notifications = append(notifications, n)
 	}
-	return notifications
+	return &notifications, err
 }

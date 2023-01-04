@@ -44,7 +44,7 @@ func (nh *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (nh *Handler) FindAllForWeekday(weekday internal.Weekday) ([]Notification, error) {
+func (nh *Handler) FindAllForWeekday(weekday internal.Weekday) (*[]Notification, error) {
 	return nh.store.FindAll(weekday)
 }
 

@@ -8,7 +8,7 @@ import (
 type Store interface {
 	Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int) (int, error)
 	FindByUserId(userId int) (*[]Notification, error)
-	FindAll(dayOfWeek internal.Weekday) ([]Notification, error)
+	FindAll(dayOfWeek internal.Weekday) (*[]Notification, error)
 }
 
 type Notification struct {
