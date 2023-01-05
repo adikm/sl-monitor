@@ -17,7 +17,7 @@ func NewHandler(service Service) *Handler {
 	return &Handler{service}
 }
 
-func (nh *Handler) Create(w http.ResponseWriter, r *http.Request) {
+func (nh *Handler) create(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Email     string               `json:"email"`
 		Timestamp time.Time            `json:"timestamp"`

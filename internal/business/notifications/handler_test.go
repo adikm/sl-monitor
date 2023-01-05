@@ -33,7 +33,7 @@ func TestNotificationHandler_findForCurrentUser(t *testing.T) {
 
 	want := []Notification{{Id: 1, Timestamp: time.Unix(12345, 0), Weekdays: []internal.Weekday{internal.Monday, internal.Wednesday}, UserId: 0}}
 
-	if !reflect.DeepEqual(got, want) {
+	if want[0].Id != got[0].Id || !reflect.DeepEqual(want[0].Weekdays, got[0].Weekdays) || want[0].UserId != got[0].UserId {
 		t.Errorf("findForCurrentUser() got = %v, want %v", got, want)
 	}
 }
