@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"sl-monitor/internal"
 	"testing"
 	"time"
@@ -26,33 +27,13 @@ func TestNotificationHandler_findForCurrentUser(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	var result []Notification
+	var got []Notification
 	decoder := json.NewDecoder(rr.Body)
-	decoder.Decode(&result)
+	decoder.Decode(&got)
 
-	if len(result) != 1 {
-		t.Errorf("handler returned wrong value: got size %v want %v",
-			len(result), 1)
-	}
+	want := []Notification{{Id: 1, Timestamp: time.Unix(12345, 0), Weekdays: []internal.Weekday{internal.Monday, internal.Wednesday}, UserId: 0}}
 
-	if result[0].Id != 1 {
-		t.Errorf("handler returned wrong value: got id %v want %v",
-			result[0].Id, 1)
-	}
-
-	expectedTimestamp := time.Unix(12345, 0)
-	if result[0].Timestamp != expectedTimestamp {
-		t.Errorf("handler returned wrong value: got time %v want %v",
-			result[0].Timestamp, expectedTimestamp)
-	}
-
-	if result[0].Weekdays[0] != internal.Monday || result[0].Weekdays[1] != internal.Wednesday {
-		t.Errorf("handler returned wrong value: got weekdays %v want %v %v",
-			result[0].Weekdays, internal.Monday, internal.Wednesday)
-	}
-
-	if result[0].UserId != 0 {
-		t.Errorf("handler returned wrong value: got userId %v want %v",
-			result[0].Id, 0)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("findForCurrentUser() got = %v, want %v", got, want)
 	}
 }
