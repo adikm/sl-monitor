@@ -18,7 +18,7 @@ func TestNotificationHandler_findForCurrentUser(t *testing.T) {
 	}
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(NewHandler(&NotificationStoreStub{}).findForCurrentUser)
+	handler := http.HandlerFunc(NewHandler(&NotificationService{&NotificationStoreStub{}}).findForCurrentUser)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

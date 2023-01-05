@@ -9,7 +9,7 @@ type NotificationStoreStub struct {
 }
 
 func (h *NotificationStoreStub) Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int) (int, error) {
-	return 0, nil
+	return 125, nil
 }
 
 func (h *NotificationStoreStub) FindByUserId(userId int) (*[]Notification, error) {
@@ -22,7 +22,12 @@ func (h *NotificationStoreStub) FindByUserId(userId int) (*[]Notification, error
 }
 
 func (h *NotificationStoreStub) FindAll(weekday internal.Weekday) (*[]Notification, error) {
-	return &[]Notification{}, nil
+	return &[]Notification{{
+		Id:        2,
+		Timestamp: time.Unix(12346, 0),
+		Weekdays:  []internal.Weekday{weekday},
+		UserId:    1,
+	}}, nil
 }
 
 var _ Store = &NotificationStoreStub{}

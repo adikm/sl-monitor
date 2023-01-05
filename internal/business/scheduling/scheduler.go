@@ -8,13 +8,13 @@ import (
 )
 
 type Scheduler struct {
-	NotificationsHandler *notifications.Handler
+	Service notifications.Service
 }
 
 // DoIt TODO Should be run every midnight
 func (s *Scheduler) DoIt() {
 	today := s.today()
-	result, err := s.NotificationsHandler.FindAllForWeekday(today)
+	result, err := s.Service.FindAllForWeekday(today)
 	if err != nil {
 
 	}

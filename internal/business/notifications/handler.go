@@ -10,11 +10,11 @@ import (
 )
 
 type Handler struct {
-	store Store
+	service Service
 }
 
-func NewHandler(store Store) *Handler {
-	return &Handler{store}
+func NewHandler(service Service) *Handler {
+	return &Handler{service}
 }
 
 func (nh *Handler) Create(w http.ResponseWriter, r *http.Request) {
@@ -30,27 +30,20 @@ func (nh *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId := getUserId(r)
-	id, err := nh.store.Create(input.Timestamp, input.Weekdays, userId)
+	n, err := nh.service.Create(input.Timestamp, input.Weekdays, userId)
 	if err != nil {
 		response.ServerError(w, r, err)
 		return
 	}
-
-	n := &Notification{id, input.Timestamp, input.Weekdays.AsWeekdays(), userId}
-
 	err = response.JSON(w, http.StatusOK, n)
 	if err != nil {
 		response.ServerError(w, r, err)
 	}
 }
 
-func (nh *Handler) FindAllForWeekday(weekday internal.Weekday) (*[]Notification, error) {
-	return nh.store.FindAll(weekday)
-}
-
 func (nh *Handler) findForCurrentUser(w http.ResponseWriter, r *http.Request) {
 	userId := getUserId(r)
-	notifications, err := nh.store.FindByUserId(userId)
+	notifications, err := nh.service.findByUserId(userId)
 	if err != nil {
 		response.ServerError(w, r, err)
 		return

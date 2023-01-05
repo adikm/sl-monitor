@@ -22,7 +22,8 @@ func main() {
 	db := prepareDatabase(cfg.Database.Name)
 	defer db.Close()
 
-	notificationsHandler := prepareNotificationHandler(db)
+	notificationsService := prepareNotificationService(db)
+	notificationsHandler := notifications.NewHandler(notificationsService)
 	stationsHandler := stations.NewHandler(cfg, trafikverket.NewAPIService())
 	authHandler := auth.NewHandler(cfg)
 
@@ -34,7 +35,7 @@ func main() {
 	stations.Routes(stationsHandler)
 	auth.Routes(authHandler)
 
-	scheduler := scheduling.Scheduler{notificationsHandler}
+	scheduler := scheduling.Scheduler{notificationsService}
 	scheduler.DoIt()
 
 	err := runServer(cfg.Server.Addr)
@@ -46,10 +47,9 @@ func main() {
 	log.Println("server stopped")
 }
 
-func prepareNotificationHandler(db *sql.DB) *notifications.Handler {
-	notificationsStore := notifications.NewStore(db)
-	notificationsHandler := notifications.NewHandler(notificationsStore)
-	return notificationsHandler
+func prepareNotificationService(db *sql.DB) *notifications.NotificationService {
+	store := notifications.NewStore(db)
+	return notifications.NewService(store)
 }
 
 func prepareDatabase(dbName string) *sql.DB {
