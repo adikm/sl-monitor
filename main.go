@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"sl-monitor/internal/business/notifications"
-	"sl-monitor/internal/business/scheduling"
 	"sl-monitor/internal/business/stations"
 	"sl-monitor/internal/business/stations/trafikverket"
 	"sl-monitor/internal/config"
@@ -35,8 +34,8 @@ func main() {
 	stations.Routes(stationsHandler)
 	auth.Routes(authHandler)
 
-	scheduler := scheduling.Scheduler{notificationsService}
-	scheduler.DoIt()
+	//scheduler := scheduling.Scheduler{Service: notificationsService}
+	//scheduler.ScheduleNotifications()
 
 	err := runServer(cfg.Server.Addr)
 

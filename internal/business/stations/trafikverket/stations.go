@@ -9,6 +9,7 @@ var cachedStation struct {
 	updated  time.Time
 }
 
+// FetchStations fetches and caches result for 24 hours
 func (s *APIService) FetchStations(authKey string) ([]Station, error) {
 	accessedMoreThan24Hours := time.Now().Sub(cachedStation.updated).Hours() > 24
 	if accessedMoreThan24Hours {

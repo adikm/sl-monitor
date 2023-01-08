@@ -6,7 +6,5 @@ import (
 )
 
 func Routes(sh *Handler) {
-
 	http.HandleFunc("/stations", request.MustBe(http.MethodGet, sh.FetchStations))
-
 }
