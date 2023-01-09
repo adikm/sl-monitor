@@ -21,7 +21,7 @@ type Result struct {
 // ScheduleNotifications fanin fanout pattern.
 // this method is blocking
 func (s *Scheduler) ScheduleNotifications() []Result {
-	today := s.today()
+	today := internal.TodayWeekday()
 	notificationsToSchedule, err := s.Service.FindAllForWeekday(today)
 	if err != nil {
 		log.Println(err)
@@ -69,25 +69,4 @@ func (s *Scheduler) sendNotification(n notifications.Notification, channel chan<
 	fmt.Printf("Sending notification id =%d \r\n", n.Id)
 	fmt.Printf("EMAILED!! %v \r\n", n) // email it
 	channel <- Result{success: true, notificationId: n.Id}
-}
-
-func (s *Scheduler) today() internal.Weekday {
-	switch weekday := time.Now().Weekday(); weekday {
-	case time.Monday:
-		return internal.Monday
-	case time.Tuesday:
-		return internal.Tuesday
-	case time.Wednesday:
-		return internal.Wednesday
-	case time.Thursday:
-		return internal.Thursday
-	case time.Friday:
-		return internal.Friday
-	case time.Saturday:
-		return internal.Saturday
-	case time.Sunday:
-		return internal.Sunday
-	default:
-		return internal.Monday
-	}
 }

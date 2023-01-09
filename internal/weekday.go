@@ -1,5 +1,7 @@
 package internal
 
+import "time"
+
 type Weekday int8
 type WeekdaysSum int8
 
@@ -36,3 +38,11 @@ func (day Weekday) asInt() int8 {
 func (sum WeekdaysSum) asInt() int8 {
 	return int8(sum)
 }
+
+func TodayWeekday() Weekday {
+	return daysMapping[time.Now().Weekday()]
+}
+
+var daysMapping = []Weekday{time.Monday: Monday, time.Tuesday: Tuesday,
+	time.Wednesday: Wednesday, time.Thursday: Thursday,
+	time.Friday: Friday, time.Saturday: Saturday, time.Sunday: Sunday}
