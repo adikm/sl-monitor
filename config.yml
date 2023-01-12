@@ -1,5 +1,5 @@
 server:
-  addr: localhost:4444
+  addr: :4444
   timeout:
     server: 30
     read: 15
