@@ -16,15 +16,15 @@ FROM gcr.io/distroless/base-debian10
 WORKDIR /
 
 ARG TRAFFIC_API_AUTH_KEY
+ARG MAIL_USERNAME
 ARG MAIL_PASSWORD
 
 COPY --from=build /sl-monitor /sl-monitor
 COPY config.yml config.yml
-COPY test.db test.db
 COPY assets assets
 
 EXPOSE 4444
 
-USER nonroot:nonroot
+USER root:root
 
 ENTRYPOINT ["/sl-monitor"]

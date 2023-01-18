@@ -6,12 +6,12 @@ server:
     write: 10
     idle: 5
 database:
-  name: test.db
+  name: database.db # if changed, update it in the dockerfile
 traffic_api:
   authKey: # env TRAFFIC_API_AUTH_KEY
   url: https://api.trafikinfo.trafikverket.se/v2/data.json
 mail:
-  from: adrian-biadki@o2.pl
+  from: # env MAIL_USERNAME
   password: # env MAIL_PASSWORD
   smtpHost: poczta.o2.pl
   smtpPort: 465

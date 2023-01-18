@@ -39,6 +39,8 @@ func (sqlite sqlite) Migrate(db *sql.DB) error {
 		return err
 	}
 	migrator, err := migrate.NewWithDatabaseInstance("file://assets/migrations", sqlite.dbName, instance)
+	migrator.Log = &directLogger{}
+
 	if err != nil {
 		log.Print("Unable to prepare migrations")
 		return err
@@ -54,5 +56,16 @@ func (sqlite sqlite) Migrate(db *sql.DB) error {
 	}
 	return nil
 }
+
+type directLogger struct{}
+
+func (l *directLogger) Printf(format string, v ...interface{}) {
+	log.Printf(format, v)
+}
+func (l *directLogger) Verbose() bool {
+	return false
+}
+
+// Verbose should return true when verbose logging output is wanted
 
 var _ Database = &sqlite{}

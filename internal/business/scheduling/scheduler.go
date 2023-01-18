@@ -5,12 +5,14 @@ import (
 	"log"
 	"sl-monitor/internal"
 	"sl-monitor/internal/business/notifications"
+	"sl-monitor/internal/smtp"
 	"sync"
 	"time"
 )
 
 type Scheduler struct {
 	Service notifications.Service
+	Mailer  *smtp.Mailer
 }
 
 type Result struct {
@@ -67,6 +69,7 @@ func (s *Scheduler) collectResult(results *[]Result, resultChan chan Result, wg 
 func (s *Scheduler) sendNotification(n notifications.Notification, channel chan<- Result, wg *sync.WaitGroup) { // producer
 	defer wg.Done()
 	fmt.Printf("Sending notification id =%d \r\n", n.Id)
+	//s.Mailer.SendMail(n.UserId)
 	fmt.Printf("EMAILED!! %v \r\n", n) // email it
 	channel <- Result{success: true, notificationId: n.Id}
 }
