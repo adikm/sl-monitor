@@ -60,7 +60,7 @@ func (sqlite sqlite) Migrate(db *sql.DB) error {
 type directLogger struct{}
 
 func (l *directLogger) Printf(format string, v ...interface{}) {
-	log.Printf(format, v)
+	log.Printf(format, v...)
 }
 func (l *directLogger) Verbose() bool {
 	return false
