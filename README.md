@@ -16,7 +16,7 @@ Make sure you have Docker and SQLite3 installed locally on your machine
 sqlite3 filename.db
 ```
 2. Open [config.yml](config.yml) and configure environment variables as stated in the file.
-   Optionally one can change the values in the config file as well.
+   Optionally you can pass the variables directly to the _run_ command. If you wish to do so, skip this step.
 3. Build the docker image:
 ```shell
 make build
@@ -24,7 +24,11 @@ make build
 
 4. Run 
 ```shell 
-make run DB_FILE filename.db
+make run DB_FILE=filename.db
+```
+optionally pass additional variables:
+```shell 
+make run DB_FILE=filename.db TRAFFIC_API_AUTH_KEY=value EMAIL_USERNAME=user EMAIL_PASSWORD=pass
 ```
 
 The application will start and should be accessible under the following link: ```http://localhost:4444```
