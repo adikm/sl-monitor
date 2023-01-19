@@ -66,6 +66,4 @@ func (l *directLogger) Verbose() bool {
 	return false
 }
 
-// Verbose should return true when verbose logging output is wanted
-
 var _ Database = &sqlite{}
