@@ -34,7 +34,10 @@ func (s *Scheduler) ScheduleNotifications() []Result {
 	var wg sync.WaitGroup
 	for _, n := range *notificationsToSchedule {
 		now := time.Now()
-		executionDate := time.Date(now.Year(), now.Month(), now.Day(), n.Timestamp.Hour(), n.Timestamp.Minute(), n.Timestamp.Second(), 0, time.Local) // always today and time that's saved in db
+		executionDate := s.getExecutionDate(now, n) // always today and time that's saved in db
+		if time.Now().After(executionDate) {        // if current time is already after the expected schedule time, skip - helpful during redeployment
+			continue
+		}
 		resultChan := make(chan Result, 1)
 		wg.Add(1)
 		go s.scheduleNotification(n, executionDate, &wg, resultChan)
@@ -47,6 +50,10 @@ func (s *Scheduler) ScheduleNotifications() []Result {
 	return results
 }
 
+func (s *Scheduler) getExecutionDate(now time.Time, n notifications.Notification) time.Time {
+	return time.Date(now.Year(), now.Month(), now.Day(), n.Timestamp.Hour(), n.Timestamp.Minute(), n.Timestamp.Second(), 0, time.Local)
+}
+
 func (s *Scheduler) scheduleNotification(n notifications.Notification, until time.Time, wg *sync.WaitGroup, sampleChan chan Result) {
 	defer wg.Done()
 
@@ -54,6 +61,7 @@ func (s *Scheduler) scheduleNotification(n notifications.Notification, until tim
 	var w sync.WaitGroup
 	w.Add(1)
 	fmt.Printf("Scheduled notification id=%d on %s \r\n", n.Id, until)
+	until = until.Add(-24 * time.Hour)
 	time.Sleep(time.Until(until))
 	go s.sendNotification(n, sampleChan, &w)
 	w.Wait()

@@ -14,7 +14,8 @@ func NewService(store Store) *NotificationService {
 }
 
 func (s *NotificationService) Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int) (*Notification, error) {
-	id, err := s.store.Create(timestamp, weekdays, userId)
+	normalizedTime := time.Date(1970, 1, 1, timestamp.Hour(), timestamp.Minute(), timestamp.Second(), 0, time.Local)
+	id, err := s.store.Create(normalizedTime, weekdays, userId)
 
 	if err != nil {
 		return nil, err

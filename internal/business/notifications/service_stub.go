@@ -22,5 +22,7 @@ func (s *NotificationServiceStub) FindAllForWeekday(weekday internal.Weekday) (*
 	notifications = append(notifications, Notification{Id: 5, Timestamp: now.Add(time.Second * time.Duration(5)), Weekdays: []internal.Weekday{internal.Sunday}, UserId: 0})
 	notifications = append(notifications, Notification{Id: 3, Timestamp: now.Add(time.Second * time.Duration(3)), Weekdays: []internal.Weekday{internal.Sunday}, UserId: 0})
 	notifications = append(notifications, Notification{Id: 7, Timestamp: now.Add(time.Second * time.Duration(7)), Weekdays: []internal.Weekday{internal.Sunday}, UserId: 0})
+	// the last one shouldn't be fired. time.Now() is after the notification time
+	notifications = append(notifications, Notification{Id: 128, Timestamp: now.Add(-time.Second * time.Duration(10)), Weekdays: []internal.Weekday{internal.Sunday}, UserId: 0})
 	return &notifications, nil
 }
