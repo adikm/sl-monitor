@@ -1,10 +1,13 @@
 package auth
 
-import "net/http"
+import (
+	"net/http"
+	request "sl-monitor/internal/server"
+)
 
-func Routes(ah *AuthHandler) {
+func Routes(ah *Handler) {
 
-	http.HandleFunc("/login", ah.login)
-	http.HandleFunc("/logout", MustBeLoggedIn(ah.Logout))
+	http.HandleFunc("/login", request.MustBe(http.MethodPost, ah.login))
+	http.HandleFunc("/logout", request.MustBe(http.MethodPost, MustBeLoggedIn(ah.Logout)))
 
 }

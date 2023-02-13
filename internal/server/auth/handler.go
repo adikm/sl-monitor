@@ -9,17 +9,12 @@ import (
 	"time"
 )
 
-type AuthHandler struct {
+type Handler struct {
 	config *config.Config
 }
 
-func NewHandler(config *config.Config) *AuthHandler {
-	return &AuthHandler{config}
-}
-
-type Credentials struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
+func NewHandler(config *config.Config) *Handler {
+	return &Handler{config}
 }
 
 var users = map[string]string{ // TODO get rid
@@ -27,10 +22,10 @@ var users = map[string]string{ // TODO get rid
 	"user2": "password2",
 }
 
-func (ah *AuthHandler) login(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		response.MethodNotAllowed(w, r)
-		return
+func (ah *Handler) login(w http.ResponseWriter, r *http.Request) {
+	type Credentials struct {
+		Password string `json:"password"`
+		Username string `json:"username"`
 	}
 
 	var creds Credentials
@@ -66,7 +61,7 @@ func (ah *AuthHandler) login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (ah *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+func (ah *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie("session_token")
 	if err != nil {
 		if err == http.ErrNoCookie {
