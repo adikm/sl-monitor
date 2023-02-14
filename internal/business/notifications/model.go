@@ -25,3 +25,4 @@ type Notification struct {
 }
 
 var _ Store = &NotificationStore{}
+var _ Service = &NotificationService{}

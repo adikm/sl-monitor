@@ -9,6 +9,7 @@ import (
 	"sl-monitor/internal/business/scheduling"
 	"sl-monitor/internal/business/stations"
 	"sl-monitor/internal/business/stations/trafikverket"
+	"sl-monitor/internal/business/users"
 	"sl-monitor/internal/config"
 	"sl-monitor/internal/database"
 	"sl-monitor/internal/server/auth"
@@ -18,26 +19,37 @@ import (
 
 func main() {
 	cfg := loadCfg()
-	mailer := smtp.NewMailer(cfg.Mail.SmtpHost, cfg.Mail.SmtpPort, cfg.Mail.From, cfg.Mail.Password, cfg.Mail.From)
 
+	/*
+		DATABASE
+	*/
 	db := prepareDatabase(cfg.Database.Name)
 	defer db.Close()
 
+	/*
+		BUSINESS
+	*/
+	usersService := users.NewService(users.NewStore(db))
+	mailer := smtp.NewMailer(cfg.Mail.SmtpHost, cfg.Mail.SmtpPort, cfg.Mail.From, cfg.Mail.Password, cfg.Mail.From, usersService)
 	notificationsService := prepareNotificationService(db)
 	notificationsHandler := notifications.NewHandler(notificationsService)
 	stationsHandler := stations.NewHandler(cfg, trafikverket.NewAPIService())
+	usersHandler := users.NewHandler(usersService)
 	authHandler := auth.NewHandler(cfg)
 
 	log.Printf("starting server on %s \n", cfg.Server.Addr)
 
-	// setup routes
+	/*
+		ROUTES
+	*/
 	http.HandleFunc("/", response.NotFound)
+	users.Routes(usersHandler)
 	notifications.Routes(notificationsHandler)
 	stations.Routes(stationsHandler)
 	auth.Routes(authHandler)
 
-	scheduler := scheduling.Scheduler{Service: notificationsService, Mailer: mailer}
-	scheduler.ScheduleNotifications()
+	scheduler := scheduling.NewScheduler(notificationsService, mailer, usersService)
+	go scheduler.ScheduleNotifications()
 
 	err := runServer(cfg.Server.Addr)
 

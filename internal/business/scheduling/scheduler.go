@@ -1,18 +1,25 @@
 package scheduling
 
 import (
-	"fmt"
+	"bytes"
+	"html/template"
 	"log"
 	"sl-monitor/internal"
 	"sl-monitor/internal/business/notifications"
+	"sl-monitor/internal/business/users"
 	"sl-monitor/internal/smtp"
 	"sync"
 	"time"
 )
 
 type Scheduler struct {
-	Service notifications.Service
-	Mailer  *smtp.Mailer
+	nService notifications.Service
+	uService users.Service
+	*smtp.Mailer
+}
+
+func NewScheduler(service notifications.Service, mailer *smtp.Mailer, uS users.Service) *Scheduler {
+	return &Scheduler{service, uS, mailer}
 }
 
 type Result struct {
@@ -24,7 +31,7 @@ type Result struct {
 // this method is blocking
 func (s *Scheduler) ScheduleNotifications() []Result {
 	today := internal.TodayWeekday()
-	notificationsToSchedule, err := s.Service.FindAllForWeekday(today)
+	notificationsToSchedule, err := s.nService.FindAllForWeekday(today)
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -45,7 +52,7 @@ func (s *Scheduler) ScheduleNotifications() []Result {
 		go s.collectResult(&results, resultChan, &wg)
 	}
 	wg.Wait()
-	fmt.Printf("Finished with results %v \r\n", results)
+	log.Printf("Finished with results %v \r\n", results)
 
 	return results
 }
@@ -54,16 +61,15 @@ func (s *Scheduler) getExecutionDate(now time.Time, n notifications.Notification
 	return time.Date(now.Year(), now.Month(), now.Day(), n.Timestamp.Hour(), n.Timestamp.Minute(), n.Timestamp.Second(), 0, time.Local)
 }
 
-func (s *Scheduler) scheduleNotification(n notifications.Notification, until time.Time, wg *sync.WaitGroup, sampleChan chan Result) {
+func (s *Scheduler) scheduleNotification(n notifications.Notification, until time.Time, wg *sync.WaitGroup, resultChan chan Result) {
 	defer wg.Done()
 
-	defer close(sampleChan)
+	defer close(resultChan)
 	var w sync.WaitGroup
 	w.Add(1)
-	fmt.Printf("Scheduled notification id=%d on %s \r\n", n.Id, until)
-	until = until.Add(-24 * time.Hour)
+	log.Printf("Scheduled notification id=%d on %s \r\n", n.Id, until)
 	time.Sleep(time.Until(until))
-	go s.sendNotification(n, sampleChan, &w)
+	go s.sendNotification(n, resultChan, &w)
 	w.Wait()
 }
 
@@ -76,8 +82,28 @@ func (s *Scheduler) collectResult(results *[]Result, resultChan chan Result, wg 
 
 func (s *Scheduler) sendNotification(n notifications.Notification, channel chan<- Result, wg *sync.WaitGroup) { // producer
 	defer wg.Done()
-	fmt.Printf("Sending notification id =%d \r\n", n.Id)
-	//s.Mailer.SendMail(n.UserId)
-	fmt.Printf("EMAILED!! %v \r\n", n) // email it
+	log.Printf("Sending notification id =%d \r\n", n.Id)
+
+	var body bytes.Buffer
+
+	t, _ := template.ParseFiles("assets/mail.html")
+	t.Execute(&body, mailTemplateData{"TRAIN", "DATA", false, true})
+
+	u, err := s.uService.FindById(n.UserId)
+	if err != nil {
+		log.Printf("Error while sending notification %d", err)
+		channel <- Result{success: false, notificationId: n.Id}
+		return
+	}
+
+	s.SendMail(u.Email, body)
+	log.Printf("EMAILED!! %v \r\n", n) // email it
 	channel <- Result{success: true, notificationId: n.Id}
+}
+
+type mailTemplateData struct {
+	Station    string
+	Date       string
+	Canceled   bool
+	ShortTrain bool
 }

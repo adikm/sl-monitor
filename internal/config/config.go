@@ -27,7 +27,7 @@ type trafficAPI struct {
 }
 
 type mail struct {
-	From     string `yaml:"from"`
+	From     string `yaml:"from" envconfig:"MAIL_USERNAME"`
 	Password string `yaml:"password" envconfig:"MAIL_PASSWORD"`
 	SmtpHost string `yaml:"smtpHost"`
 	SmtpPort int    `yaml:"smtpPort"`

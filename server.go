@@ -32,6 +32,7 @@ func runServer(addr string) error {
 	}()
 
 	err := srv.ListenAndServe()
+
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
