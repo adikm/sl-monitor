@@ -1,12 +1,9 @@
 package scheduling
 
 import (
-	"bytes"
-	"html/template"
 	"log"
 	"sl-monitor/internal"
 	"sl-monitor/internal/business/notifications"
-	"sl-monitor/internal/business/users"
 	"sl-monitor/internal/smtp"
 	"sync"
 	"time"
@@ -14,12 +11,12 @@ import (
 
 type Scheduler struct {
 	nService notifications.Service
-	uService users.Service
-	*smtp.Mailer
+	sender   *Sender
+	mailer   *smtp.Mailer
 }
 
-func NewScheduler(service notifications.Service, mailer *smtp.Mailer, uS users.Service) *Scheduler {
-	return &Scheduler{service, uS, mailer}
+func NewScheduler(service notifications.Service, sender *Sender, mailer *smtp.Mailer) *Scheduler {
+	return &Scheduler{service, sender, mailer}
 }
 
 type Result struct {
@@ -69,7 +66,7 @@ func (s *Scheduler) scheduleNotification(n notifications.Notification, until tim
 	w.Add(1)
 	log.Printf("Scheduled notification id=%d on %s \r\n", n.Id, until)
 	time.Sleep(time.Until(until))
-	go s.sendNotification(n, resultChan, &w)
+	go s.performScheduledNotification(n, resultChan, &w)
 	w.Wait()
 }
 
@@ -80,30 +77,26 @@ func (s *Scheduler) collectResult(results *[]Result, resultChan chan Result, wg 
 	}
 }
 
-func (s *Scheduler) sendNotification(n notifications.Notification, channel chan<- Result, wg *sync.WaitGroup) { // producer
+func (s *Scheduler) performScheduledNotification(n notifications.Notification, channel chan<- Result, wg *sync.WaitGroup) { // producer
 	defer wg.Done()
 	log.Printf("Sending notification id =%d \r\n", n.Id)
 
-	var body bytes.Buffer
-
-	t, _ := template.ParseFiles("assets/mail.html")
-	t.Execute(&body, mailTemplateData{"TRAIN", "DATA", false, true})
-
-	u, err := s.uService.FindById(n.UserId)
-	if err != nil {
-		log.Printf("Error while sending notification %d", err)
+	to, body := s.sender.prepareNotificationMail(n.UserId)
+	if body == nil {
 		channel <- Result{success: false, notificationId: n.Id}
 		return
 	}
 
-	s.SendMail(u.Email, body)
+	s.mailer.SendMail(to, *body)
 	log.Printf("EMAILED!! %v \r\n", n) // email it
 	channel <- Result{success: true, notificationId: n.Id}
 }
 
 type mailTemplateData struct {
-	Station    string
-	Date       string
-	Canceled   bool
-	ShortTrain bool
+	RecipientName string
+	LineNumber    string
+	Destination   string
+	Date          string
+	Canceled      bool
+	ShortTrain    bool
 }

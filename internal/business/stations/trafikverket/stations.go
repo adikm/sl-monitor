@@ -10,10 +10,10 @@ var cachedStation struct {
 }
 
 // FetchStations fetches and caches result for 24 hours
-func (s *APIService) FetchStations(authKey string) ([]Station, error) {
+func (s *APIService) FetchStations() ([]Station, error) {
 	accessedMoreThan24Hours := time.Now().Sub(cachedStation.updated).Hours() > 24
 	if accessedMoreThan24Hours {
-		request := buildStationsRequest(authKey)
+		request := buildStationsRequest(s.authKey)
 		result := new(stationsResult)
 		err := s.remoteClient.post(&request, &result)
 		if err != nil {

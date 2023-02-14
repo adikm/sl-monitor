@@ -4,8 +4,8 @@ import (
 	"fmt"
 )
 
-func (s *APIService) FetchDepartures(authKey string) ([]Train, error) { // TODO, not yet used
-	request := buildDeparturesRequest(authKey)
+func (s *APIService) FetchDepartures() ([]Train, error) {
+	request := buildDeparturesRequest(s.authKey)
 	result := new(trainsResult)
 	err := s.remoteClient.post(&request, &result)
 	if err != nil {
@@ -26,9 +26,9 @@ func buildDeparturesRequest(authKey string) request {
                                         </OR>`)
 	requestData := request{Login: login{authKey}, Query: query{
 		ObjectType:    "TrainAnnouncement",
-		SchemaVersion: "1.6",
+		SchemaVersion: "1.8",
 		OrderBy:       "AdvertisedTimeAtLocation",
-		Include:       []string{"TechnicalTrainIdent", "AdvertisedTimeAtLocation", "EstimatedTimeAtLocation", "Canceled", "Deviation", "ToLocation"},
+		Include:       []string{"ProductInformation", "AdvertisedTimeAtLocation", "EstimatedTimeAtLocation", "Canceled", "Deviation", "ToLocation"},
 		Filter: filter{And: and{
 			[]equal{
 				{Name: "ActivityType", Value: "avgang"},

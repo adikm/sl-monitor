@@ -2,12 +2,11 @@ package scheduling
 
 import (
 	"sl-monitor/internal/business/notifications"
-	"sl-monitor/internal/business/users"
 	"testing"
 )
 
 func TestScheduler_ScheduleNotifications(t *testing.T) {
-	scheduler := Scheduler{nService: &notifications.NotificationServiceStub{}, uService: users.UserServiceStub{}, Mailer: nil}
+	scheduler := Scheduler{nService: &notifications.NotificationServiceStub{}, sender: &Sender{nil, nil}, mailer: nil} // TODO
 	got := scheduler.ScheduleNotifications()
 
 	if len(got) != 3 {

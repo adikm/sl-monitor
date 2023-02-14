@@ -1,16 +1,17 @@
 package trafikverket
 
 type Service interface {
-	FetchStations(authKey string) ([]Station, error)
-	FetchDepartures(authKey string) ([]Train, error)
+	FetchStations() ([]Station, error)
+	FetchDepartures() ([]Train, error)
 }
 
 type APIService struct {
 	remoteClient client
+	authKey      string
 }
 
-func NewAPIService() *APIService {
-	return &APIService{remoteClient: &remoteClient{}}
+func NewAPIService(authKey string) *APIService {
+	return &APIService{remoteClient: &remoteClient{}, authKey: authKey}
 }
 
 var _ Service = &APIService{}

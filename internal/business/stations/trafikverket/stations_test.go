@@ -18,9 +18,9 @@ func Test_buildStationsRequest(t *testing.T) {
 }
 
 func TestRemoteService_FetchStations(t *testing.T) {
-	service := APIService{&remoteClientStub{}}
+	service := APIService{&remoteClientStub{}, ""}
 
-	stations, err := service.FetchStations("")
+	stations, err := service.FetchStations()
 
 	if err != nil {
 		t.Fatal(err)
@@ -30,7 +30,7 @@ func TestRemoteService_FetchStations(t *testing.T) {
 		t.Errorf("received slice length = %v, want %v", 0, 1)
 	}
 
-	expectedStation := Station{Name: "TestStation", Id: "TS"}
+	expectedStation := Station{Name: "TestStation", Code: "TS"}
 	if stations[0] != expectedStation {
 		t.Errorf("received object = %v, want %v", stations[0], expectedStation)
 	}

@@ -3,10 +3,10 @@ package trafikverket
 type ServiceStub struct {
 }
 
-func (s *ServiceStub) FetchStations(authKey string) ([]Station, error) {
+func (s *ServiceStub) FetchStations() ([]Station, error) {
 	return []Station{}, nil
 }
-func (s *ServiceStub) FetchDepartures(authKey string) ([]Train, error) {
+func (s *ServiceStub) FetchDepartures() ([]Train, error) {
 	return []Train{}, nil
 }
 

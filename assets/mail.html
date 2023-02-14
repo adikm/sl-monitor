@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-<span>Odjazd ze stacji {{.Station}} o godzinie {{.Date}} {{if .Canceled}} odwołany.{{end}}{{if .ShortTrain}} odbędzie się krótkim pociągiem. Pospiesz się!{{end}}</span>
+<p>Hello {{.RecipientName}}!</p>
+<p>A train {{.LineNumber}} departures towards {{.Destination}} at {{.Date}}.
+    {{if .ShortTrain}} The train is shortened, so hurry up!{{end}}
+    {{if .Canceled}}It got canceled though.{{end}}</p>
 
 </body>
 </html>

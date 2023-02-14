@@ -33,7 +33,8 @@ func main() {
 	mailer := smtp.NewMailer(cfg.Mail.SmtpHost, cfg.Mail.SmtpPort, cfg.Mail.From, cfg.Mail.Password, cfg.Mail.From, usersService)
 	notificationsService := prepareNotificationService(db)
 	notificationsHandler := notifications.NewHandler(notificationsService)
-	stationsHandler := stations.NewHandler(cfg, trafikverket.NewAPIService())
+	tvService := trafikverket.NewAPIService(cfg.TrafficAPI.AuthKey)
+	stationsHandler := stations.NewHandler(tvService)
 	usersHandler := users.NewHandler(usersService)
 	authHandler := auth.NewHandler(cfg)
 
@@ -48,7 +49,11 @@ func main() {
 	stations.Routes(stationsHandler)
 	auth.Routes(authHandler)
 
-	scheduler := scheduling.NewScheduler(notificationsService, mailer, usersService)
+	/*
+		SCHEDULING
+	*/
+	sender := scheduling.NewSender(usersService, tvService)
+	scheduler := scheduling.NewScheduler(notificationsService, sender, mailer)
 	go scheduler.ScheduleNotifications()
 
 	err := runServer(cfg.Server.Addr)
