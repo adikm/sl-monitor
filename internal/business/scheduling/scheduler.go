@@ -40,6 +40,7 @@ func (s *Scheduler) ScheduleNotifications() []Result {
 		now := time.Now()
 		executionDate := s.getExecutionDate(now, n) // always today and time that's saved in db
 		if time.Now().After(executionDate) {        // if current time is already after the expected schedule time, skip - helpful during redeployment
+			log.Printf("Ignoring scheduling notificationId=%d because the time is after the expected schedule date\n", n.Id)
 			continue
 		}
 		resultChan := make(chan Result, 1)
@@ -81,7 +82,7 @@ func (s *Scheduler) performScheduledNotification(n notifications.Notification, c
 	defer wg.Done()
 	log.Printf("Sending notification id =%d \r\n", n.Id)
 
-	to, body := s.sender.prepareNotificationMail(n.UserId)
+	to, body := s.sender.prepareNotificationMail(n.UserId, n.StationCode)
 	if body == nil {
 		channel <- Result{success: false, notificationId: n.Id}
 		return
@@ -90,13 +91,4 @@ func (s *Scheduler) performScheduledNotification(n notifications.Notification, c
 	s.mailer.SendMail(to, *body)
 	log.Printf("EMAILED!! %v \r\n", n) // email it
 	channel <- Result{success: true, notificationId: n.Id}
-}
-
-type mailTemplateData struct {
-	RecipientName string
-	LineNumber    string
-	Destination   string
-	Date          string
-	Canceled      bool
-	ShortTrain    bool
 }

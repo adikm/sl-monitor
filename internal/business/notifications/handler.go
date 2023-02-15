@@ -19,9 +19,10 @@ func NewHandler(service Service) *Handler {
 
 func (nh *Handler) create(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Email     string               `json:"email"`
-		Timestamp time.Time            `json:"timestamp"`
-		Weekdays  internal.WeekdaysSum `json:"weekdays"`
+		Email       string               `json:"email"`
+		Timestamp   time.Time            `json:"timestamp"`
+		Weekdays    internal.WeekdaysSum `json:"weekdays"`
+		StationCode string               `json:"stationCode"`
 	}
 
 	err := request.DecodeJSON(r, &input)
@@ -29,8 +30,8 @@ func (nh *Handler) create(w http.ResponseWriter, r *http.Request) {
 		response.BadRequest(w, r, err)
 		return
 	}
-	userId := getUserId(r)
-	n, err := nh.service.Create(input.Timestamp, input.Weekdays, userId)
+	userId := currentUserId(r)
+	n, err := nh.service.Create(input.Timestamp, input.Weekdays, userId, input.StationCode)
 	if err != nil {
 		response.ServerError(w, r, err)
 		return
@@ -42,7 +43,7 @@ func (nh *Handler) create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (nh *Handler) findForCurrentUser(w http.ResponseWriter, r *http.Request) {
-	userId := getUserId(r)
+	userId := currentUserId(r)
 	notifications, err := nh.service.findByUserId(userId)
 	if err != nil {
 		response.ServerError(w, r, err)
@@ -55,7 +56,7 @@ func (nh *Handler) findForCurrentUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getUserId(r *http.Request) int {
+func currentUserId(r *http.Request) int {
 	cookie, _ := r.Cookie("session_token")
 	sessionToken := cookie.Value
 	return auth.Sessions[sessionToken].UserId

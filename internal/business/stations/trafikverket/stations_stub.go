@@ -6,7 +6,7 @@ type ServiceStub struct {
 func (s *ServiceStub) FetchStations() ([]Station, error) {
 	return []Station{}, nil
 }
-func (s *ServiceStub) FetchDepartures() ([]Train, error) {
+func (s *ServiceStub) FetchDepartures(string) ([]Train, error) {
 	return []Train{}, nil
 }
 
