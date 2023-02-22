@@ -4,13 +4,11 @@ type UserServiceStub struct {
 }
 
 func (u UserServiceStub) Create(r UserRequest) (*UserResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	return &UserResponse{}, nil
 }
 
 func (u UserServiceStub) FindById(userId int) (*UserResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	return &UserResponse{}, nil
 }
 
 var _ Service = &UserServiceStub{}

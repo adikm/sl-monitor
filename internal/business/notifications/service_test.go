@@ -11,13 +11,14 @@ func TestNotificationService_Create(t *testing.T) {
 	s := NotificationService{&NotificationStoreStub{}}
 
 	want := &Notification{
-		Id:        125,
-		Timestamp: time.Unix(12346, 0),
-		Weekdays:  []internal.Weekday{internal.Saturday, internal.Sunday},
-		UserId:    54,
+		Id:          125,
+		Timestamp:   time.Unix(12346, 0),
+		Weekdays:    []internal.Weekday{internal.Saturday, internal.Sunday},
+		UserId:      54,
+		StationCode: "Hnd",
 	}
 
-	got, _ := s.Create(time.Unix(12346, 0), 96, 54)
+	got, _ := s.Create(time.Unix(12346, 0), 96, 54, "Hnd")
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("FindAllForWeekday() got = %v, want %v", got, want)
 	}

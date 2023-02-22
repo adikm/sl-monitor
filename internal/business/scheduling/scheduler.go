@@ -88,7 +88,9 @@ func (s *Scheduler) performScheduledNotification(n notifications.Notification, c
 		return
 	}
 
-	s.mailer.SendMail(to, *body)
+	if s.mailer != nil {
+		s.mailer.SendMail(to, *body)
+	}
 	log.Printf("EMAILED!! %v \r\n", n) // email it
 	channel <- Result{success: true, notificationId: n.Id}
 }
