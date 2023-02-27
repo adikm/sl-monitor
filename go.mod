@@ -1,6 +1,6 @@
 module sl-monitor
 
-go 1.19
+go 1.20
 
 require (
 	github.com/golang-migrate/migrate v3.5.4+incompatible
