@@ -29,7 +29,7 @@ func (m *Mailer) SendMail(to string, body bytes.Buffer) {
 	msg.SetBody("text/html", body.String())
 
 	if err := m.DialAndSend(msg); err != nil {
-		log.Println(err)
+		log.Printf("Error while sending email %v\n", err)
 	}
 
 }

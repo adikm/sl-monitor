@@ -27,8 +27,10 @@ type Result struct {
 // ScheduleNotifications fanin fanout pattern.
 // this method is blocking
 func (s *Scheduler) ScheduleNotifications() []Result {
+	log.Println("Scheduling notifications")
 	today := internal.TodayWeekday()
 	notificationsToSchedule, err := s.nService.FindAllForWeekday(today)
+	log.Printf("Number of notifications to schedule=%d\n", len(*notificationsToSchedule))
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -91,6 +93,6 @@ func (s *Scheduler) performScheduledNotification(n notifications.Notification, c
 	if s.mailer != nil {
 		s.mailer.SendMail(to, *body)
 	}
-	log.Printf("EMAILED!! %v \r\n", n) // email it
+	log.Printf("EMAILED!! %v To: %v \r\n", n, to)
 	channel <- Result{success: true, notificationId: n.Id}
 }

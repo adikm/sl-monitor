@@ -32,8 +32,16 @@ func (s *Sender) prepareNotificationMail(userId int, stationCode string) (string
 
 	var body bytes.Buffer
 	for _, departure := range departures {
-		t, _ := template.ParseFiles("assets/mail.html")
-		t.Execute(&body, s.getTemplateData(u.Name, departure))
+		t, err := template.ParseFiles("assets/mail.html")
+		if err != nil {
+			log.Printf("Error while reading template %d", err)
+			return "", nil
+		}
+		err = t.Execute(&body, s.getTemplateData(u.Name, departure))
+		if err != nil {
+			log.Printf("Error while reading template %d", err)
+			return "", nil
+		}
 		break
 	}
 
