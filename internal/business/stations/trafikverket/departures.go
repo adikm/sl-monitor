@@ -2,6 +2,7 @@ package trafikverket
 
 import (
 	"fmt"
+	"log"
 )
 
 func (s *APIService) FetchDepartures(stationCode string) ([]Train, error) {
@@ -9,6 +10,7 @@ func (s *APIService) FetchDepartures(stationCode string) ([]Train, error) {
 	result := new(trainsResult)
 	err := s.remoteClient.post(&request, &result)
 	if err != nil {
+		log.Printf("Error while fetching departures %v\n", err)
 		return nil, err
 	}
 	return result.trains(), nil
@@ -18,11 +20,13 @@ func buildDeparturesRequest(stationCode, authKey string) request {
 	text := fmt.Sprintf(`<OR>
                                             <AND>
                                                 <GT name="AdvertisedTimeAtLocation"
-                                                            value="$dateadd(-00:01:00)"/>
+                                                            value="$dateadd(00:00:10)"/>
                                                 <LT name="AdvertisedTimeAtLocation"
                                                             value="$dateadd(00:20:00)"/>
                                             </AND>
-                                            <GT name="EstimatedTimeAtLocation" value="$now"/>
+											<AND>
+                                            	<GT name="EstimatedTimeAtLocation" value="$now"/>
+											</AND>
                                         </OR>`)
 	requestData := request{Login: login{authKey}, Query: query{
 		ObjectType:    "TrainAnnouncement",

@@ -6,6 +6,7 @@ import (
 	"log"
 	"sl-monitor/internal/business/stations/trafikverket"
 	"sl-monitor/internal/business/users"
+	"time"
 )
 
 type Sender struct {
@@ -32,6 +33,9 @@ func (s *Sender) prepareNotificationMail(userId int, stationCode string) (string
 
 	var body bytes.Buffer
 	for _, departure := range departures {
+		if departure.DepartureTime.Before(time.Now()) {
+			continue // skip all the departures that are before now
+		}
 		t, err := template.ParseFiles("assets/mail.html")
 		if err != nil {
 			log.Printf("Error while reading template %d", err)
