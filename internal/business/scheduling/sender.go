@@ -75,13 +75,13 @@ type mailTemplateData struct {
 	ShortTrain    bool
 }
 
-func (s *Sender) getTemplateData(recipientNam string, departure trafikverket.Train) mailTemplateData {
+func (s *Sender) getTemplateData(recipientNam string, train trafikverket.Train) mailTemplateData {
 	return mailTemplateData{
 		RecipientName: recipientNam,
-		LineNumber:    departure.LineNumber(),
-		Destination:   s.fullStationName(departure.Destination[0].Code),
-		Date:          departure.DepartureTime.String(),
-		Canceled:      departure.Canceled,
-		ShortTrain:    false,
+		LineNumber:    train.LineNumber(),
+		Destination:   s.fullStationName(train.Destination[0].Code),
+		Date:          train.DepartureTime.String(),
+		Canceled:      train.Canceled,
+		ShortTrain:    train.IsShort(),
 	}
 }
