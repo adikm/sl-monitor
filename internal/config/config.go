@@ -40,6 +40,7 @@ type Config struct {
 	Mail       mail       `yaml:"mail"`
 }
 
+// xzz
 func Load(file *string) *Config {
 	var cfg Config
 	loadCfgFile(file, &cfg)
