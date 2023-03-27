@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"github.com/robfig/cron/v3"
 	"log"
 	"net/http"
 	"sl-monitor/internal/business/notifications"
@@ -54,9 +55,20 @@ func main() {
 	*/
 	sender := scheduling.NewSender(usersService, tvService)
 	scheduler := scheduling.NewScheduler(notificationsService, sender, mailer)
-	go scheduler.ScheduleNotifications()
 
-	err := runServer(cfg.Server.Addr)
+	c := cron.New()
+	_, err := c.AddFunc("0 0 * * *", //every day at midnight
+		func() {
+			scheduler.ScheduleNotifications()
+		},
+	)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	c.Start()
+
+	err = runServer(cfg.Server.Addr)
 
 	if err != nil {
 		log.Fatal(err)
@@ -72,7 +84,6 @@ func prepareNotificationService(db *sql.DB) *notifications.NotificationService {
 
 func prepareDatabase(dbName string) *sql.DB {
 	sqlite := database.NewSqlite(dbName)
-	log.Println(dbName)
 	db, err := sqlite.Connect()
 	if err != nil {
 		log.Fatal(err)

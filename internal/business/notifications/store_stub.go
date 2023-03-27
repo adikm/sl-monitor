@@ -8,7 +8,7 @@ import (
 type NotificationStoreStub struct {
 }
 
-func (h *NotificationStoreStub) Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int) (int, error) {
+func (h *NotificationStoreStub) Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int, code string) (int, error) {
 	return 125, nil
 }
 

@@ -2,7 +2,7 @@ package trafikverket
 
 type Service interface {
 	FetchStations() ([]Station, error)
-	FetchDepartures() ([]Train, error)
+	FetchDepartures(stationCode string) ([]Train, error)
 }
 
 type APIService struct {

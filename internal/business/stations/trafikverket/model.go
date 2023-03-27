@@ -54,6 +54,7 @@ type Train struct {
 	Information   []Information `json:"ProductInformation"`
 	Canceled      bool          `json:"Canceled"`
 	Destination   []Destination `json:"ToLocation"`
+	Deviation     []Information `json:"Deviation"`
 	//EstimatedTimeAtLocation  time.Time    `json:"EstimatedTimeAtLocation,omitempty"`
 }
 
@@ -62,17 +63,26 @@ type Information struct {
 	Description string `json:"description"`
 }
 
+type Destination struct {
+	Code string `json:"LocationName"`
+}
+
 func (t Train) LineNumber() string {
 	for _, information := range t.Information {
-		if information.Code == "PNA092" {
+		if information.Code == "PNA091" {
 			return information.Description
 		}
 	}
 	return ""
 }
 
-type Destination struct {
-	Code string `json:"LocationName"`
+func (t Train) IsShort() bool {
+	for _, deviation := range t.Deviation {
+		if deviation.Code == "ANA031" {
+			return true
+		}
+	}
+	return false
 }
 
 func (r trainsResult) trains() []Train {

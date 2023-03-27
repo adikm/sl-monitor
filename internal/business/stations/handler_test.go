@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sl-monitor/internal/business/stations/trafikverket"
-	"sl-monitor/internal/config"
 	"testing"
 )
 
@@ -15,7 +14,7 @@ func TestStationHandler_FetchStations(t *testing.T) {
 	}
 	rr := httptest.NewRecorder()
 
-	handler := http.HandlerFunc(NewHandler(&config.Config{}, &trafikverket.ServiceStub{}).FetchStations)
+	handler := http.HandlerFunc(NewHandler(&trafikverket.ServiceStub{}).FetchStations)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

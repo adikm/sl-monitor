@@ -8,7 +8,7 @@ import (
 )
 
 type Mailer struct {
-	dialer       *gomail.Dialer
+	*gomail.Dialer
 	from         string
 	usersService users.Service
 }
@@ -28,8 +28,8 @@ func (m *Mailer) SendMail(to string, body bytes.Buffer) {
 
 	msg.SetBody("text/html", body.String())
 
-	if err := m.dialer.DialAndSend(msg); err != nil {
-		log.Println(err)
+	if err := m.DialAndSend(msg); err != nil {
+		log.Printf("Error while sending email %v\n", err)
 	}
 
 }
