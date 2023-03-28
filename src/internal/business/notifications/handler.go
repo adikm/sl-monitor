@@ -3,9 +3,9 @@ package notifications
 import (
 	"net/http"
 	"sl-monitor/internal"
-	request "sl-monitor/internal/server"
+	"sl-monitor/internal/server"
 	"sl-monitor/internal/server/auth"
-	"sl-monitor/internal/server/response"
+	response "sl-monitor/internal/server/response"
 	"time"
 )
 

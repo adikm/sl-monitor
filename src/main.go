@@ -59,7 +59,7 @@ func main() {
 	c := cron.New()
 	_, err := c.AddFunc("0 0 * * *", //every day at midnight
 		func() {
-			scheduler.ScheduleNotifications()
+			go scheduler.ScheduleNotifications()
 		},
 	)
 	if err != nil {

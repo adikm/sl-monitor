@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"html/template"
 	"log"
-	"sl-monitor/internal/business/stations/trafikverket"
+	trafikverket "sl-monitor/internal/business/stations/trafikverket"
 	"sl-monitor/internal/business/users"
 	"time"
 )

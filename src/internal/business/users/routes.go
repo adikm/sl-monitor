@@ -2,7 +2,7 @@ package users
 
 import (
 	"net/http"
-	request "sl-monitor/internal/server"
+	"sl-monitor/internal/server"
 )
 
 func Routes(uh *Handler) {

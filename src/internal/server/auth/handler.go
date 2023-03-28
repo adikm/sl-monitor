@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 	"net/http"
 	"sl-monitor/internal/config"
-	request "sl-monitor/internal/server"
+	"sl-monitor/internal/server"
 	"sl-monitor/internal/server/response"
 	"time"
 )
