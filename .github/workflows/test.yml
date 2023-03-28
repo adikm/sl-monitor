@@ -5,24 +5,27 @@ name: Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ '*' ]
 
 jobs:
-
   build:
+    defaults:
+      run:
+        working-directory: src
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 'stable'
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 'stable'
 
-    - name: Build
-      run: go build -v ./src
+      - name: Build
+        run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./src
+      - name: Test
+        run: go test -v ./...
+
