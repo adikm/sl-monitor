@@ -1,10 +1,9 @@
 package stations
 
 import (
-	"net/http"
-	"sl-monitor/internal/server"
+	"github.com/go-chi/chi/v5"
 )
 
-func Routes(sh *Handler) {
-	http.HandleFunc("/stations", request.MustBe(http.MethodGet, sh.FetchStations))
+func Routes(r *chi.Mux, sh *Handler) {
+	r.Get("/stations", sh.FetchStations)
 }

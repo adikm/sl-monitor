@@ -1,10 +1,9 @@
 package users
 
 import (
-	"net/http"
-	"sl-monitor/internal/server"
+	"github.com/go-chi/chi/v5"
 )
 
-func Routes(uh *Handler) {
-	http.HandleFunc("/users", request.MustBe(http.MethodPost, uh.create))
+func Routes(r *chi.Mux, uh *Handler) {
+	r.Post("/users", uh.create)
 }

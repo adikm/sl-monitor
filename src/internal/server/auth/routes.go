@@ -1,13 +1,12 @@
 package auth
 
 import (
-	"net/http"
-	"sl-monitor/internal/server"
+	"github.com/go-chi/chi/v5"
 )
 
-func Routes(ah *Handler) {
+func Routes(r *chi.Mux, ah *Handler) {
 
-	http.HandleFunc("/login", request.MustBe(http.MethodPost, ah.login))
-	http.HandleFunc("/logout", request.MustBe(http.MethodPost, MustBeLoggedIn(ah.Logout)))
+	r.Post("/login", ah.login)
+	r.Post("/logout", MustBeLoggedIn(ah.Logout))
 
 }

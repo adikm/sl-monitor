@@ -1,12 +1,11 @@
 package notifications
 
 import (
-	"net/http"
-	"sl-monitor/internal/server"
+	"github.com/go-chi/chi/v5"
 	"sl-monitor/internal/server/auth"
 )
 
-func Routes(nh *Handler) {
-	http.HandleFunc("/notifications", request.MustBe(http.MethodPost, auth.MustBeLoggedIn(nh.create)))
-	http.HandleFunc("/notifications/all", request.MustBe(http.MethodGet, auth.MustBeLoggedIn(nh.findForCurrentUser)))
+func Routes(r *chi.Mux, nh *Handler) {
+	r.Post("/notifications", auth.MustBeLoggedIn(nh.create))
+	r.Get("/notifications/all", auth.MustBeLoggedIn(nh.findForCurrentUser))
 }

@@ -10,12 +10,13 @@ import (
 	"time"
 )
 
-func runServer(addr string) error {
+func runServer(addr string, handler http.Handler) error {
 	srv := &http.Server{
 		Addr:         addr,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  time.Minute,
+		Handler:      handler,
 	}
 
 	shutdownError := make(chan error)

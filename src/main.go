@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/robfig/cron/v3"
 	"log"
-	"net/http"
 	"sl-monitor/internal/business/notifications"
 	"sl-monitor/internal/business/scheduling"
 	"sl-monitor/internal/business/stations"
@@ -42,13 +43,20 @@ func main() {
 	log.Printf("starting server on %s \n", cfg.Server.Addr)
 
 	/*
-		ROUTES
+		ROUTING/SERVER
 	*/
-	http.HandleFunc("/", response.NotFound)
-	users.Routes(usersHandler)
-	notifications.Routes(notificationsHandler)
-	stations.Routes(stationsHandler)
-	auth.Routes(authHandler)
+	r := routerWithMiddleware()
+	r.HandleFunc("/", response.NotFound)
+	users.Routes(r, usersHandler)
+	notifications.Routes(r, notificationsHandler)
+	stations.Routes(r, stationsHandler)
+	auth.Routes(r, authHandler)
+
+	err := runServer(cfg.Server.Addr, r)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	/*
 		SCHEDULING
@@ -57,7 +65,7 @@ func main() {
 	scheduler := scheduling.NewScheduler(notificationsService, sender, mailer)
 
 	c := cron.New()
-	_, err := c.AddFunc("0 0 * * *", //every day at midnight
+	_, err = c.AddFunc("0 0 * * *", //every day at midnight
 		func() {
 			go scheduler.ScheduleNotifications()
 		},
@@ -68,13 +76,14 @@ func main() {
 	}
 	c.Start()
 
-	err = runServer(cfg.Server.Addr)
+}
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("server stopped")
+func routerWithMiddleware() *chi.Mux {
+	r := chi.NewRouter()
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	return r
 }
 
 func prepareNotificationService(db *sql.DB) *notifications.NotificationService {
