@@ -21,7 +21,7 @@ func (h *NotificationStore) Create(timestamp time.Time, weekdays internal.Weekda
 
 	query := "INSERT INTO notifications (timestamp, weekdays, user_id, station_code) VALUES ($1, $2, $3, $4);"
 
-	id, err := h.ExecContext(ctx, query, timestamp, weekdays, userId)
+	id, err := h.ExecContext(ctx, query, timestamp, weekdays, userId, stationCode)
 	if err != nil {
 		return 0, err
 	}
