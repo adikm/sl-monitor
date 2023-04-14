@@ -11,11 +11,13 @@ stop-deploy:
 
 # local operations
 build:
-	cd $(PWD)/src && go build -v
+	cd $(PWD)/src && go build
 
 run:
-	cd $(PWD)/src && go build -v && mv sl-monitor $(PWD) && cd $(PWD) && ./sl-monitor
+	cd $(PWD)/src && go build && mv sl-monitor $(PWD) && cd $(PWD) && ./sl-monitor
 
+run-debug:
+	cd $(PWD)/src && go build -gcflags "all=-N -l"  && mv sl-monitor $(PWD) && cd $(PWD) && dlv --listen=:4445 --headless=true --api-version=2 --accept-multiclient exec ./sl-monitor
 
 test:
 	cd $(PWD)/src && go test ./...
