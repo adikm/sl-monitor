@@ -11,10 +11,10 @@ stop-deploy:
 
 # local operations
 build:
-	go build -v
+	cd $(PWD)/src && go build -v
 
 run:
-	go run .
+	cd $(PWD)/src && go run .
 
 test:
-	go test ./...
+	cd $(PWD)/src && go test ./...
