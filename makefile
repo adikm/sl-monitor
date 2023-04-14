@@ -14,7 +14,8 @@ build:
 	cd $(PWD)/src && go build -v
 
 run:
-	cd $(PWD)/src && go run .
+	cd $(PWD)/src && go build -v && mv sl-monitor $(PWD) && cd $(PWD) && ./sl-monitor
+
 
 test:
 	cd $(PWD)/src && go test ./...
