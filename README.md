@@ -9,6 +9,9 @@ One can create and schedule notifications that inform about departures from chos
 ### Prerequisites
 Make sure you have Docker and SQLite3 installed locally on your machine
 
+### Architecture diagram
+
+![Diagram](architecture.png)
 
 ### Running
 1. Prepare a SQLite database file, you can change the filename:
