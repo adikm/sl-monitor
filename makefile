@@ -3,11 +3,10 @@ build-deploy:
 	docker build --tag sl-monitor .
 
 run-deploy:
-	docker run -d --name sl-monitor -e TRAFFIC_API_AUTH_KEY=${TRAFFIC_API_AUTH_KEY} -e MAIL_USERNAME=${MAIL_USERNAME} -e MAIL_PASSWORD=${MAIL_PASSWORD} -p 4444:4444 sl-monitor
+	env DB_HOST="host.docker.internal" docker-compose -f docker-compose.yml up -d
 
 stop-deploy:
-	docker stop sl-monitor
-	docker rm sl-monitor
+	docker-compose stop
 
 # local operations
 build:

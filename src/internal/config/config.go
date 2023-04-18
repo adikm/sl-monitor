@@ -19,7 +19,7 @@ type server struct {
 
 type Database struct {
 	Name     string `yaml:"name"`
-	Host     string `yaml:"host"`
+	Host     string `yaml:"host" envconfig:"DB_HOST"`
 	Port     int    `yaml:"port"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`

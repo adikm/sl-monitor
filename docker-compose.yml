@@ -11,6 +11,7 @@ services:
       - "6379:6379"
     volumes:
       - $DOCKERDIR/appdata/redis/data:/data
+
   db:
     container_name: db
     image: postgres:15.2-alpine
@@ -23,6 +24,7 @@ services:
       - "5432:5432"
     volumes:
       - $DOCKERDIR/appdata/db:/var/lib/postgresql/data
+
   mq:
     image: symptoma/activemq:latest
     container_name: 'activemq'
@@ -31,3 +33,18 @@ services:
     volumes:
       - $DOCKERDIR/appdata/activemq/data:/data/activemq
       - $DOCKERDIR/appdata/activemq/log:/var/log/activemq
+
+  sl-monitor-app:
+    container_name: sl-monitor-app
+    image: sl-monitor:latest
+    restart: always
+    environment:
+      - TRAFFIC_API_AUTH_KEY=$TRAFFIC_API_AUTH_KEY
+      - MAIL_USERNAME=$MAIL_USERNAME
+      - MAIL_PASSWORD=$MAIL_PASSWORD
+      - DB_HOST=$DB_HOST
+    ports:
+      - "4444:4444"
+    depends_on:
+      "db":
+        condition: service_started
