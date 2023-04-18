@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    entrypoint: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - default
+    ports:
+      - "6379:6379"
+    volumes:
+      - $DOCKERDIR/appdata/redis/data:/data
+  db:
+    container_name: db
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - $DOCKERDIR/appdata/db:/var/lib/postgresql/data
+  mq:
+    image: symptoma/activemq:latest
+    container_name: 'activemq'
+    ports:
+      - "61616:61616"
+    volumes:
+      - $DOCKERDIR/appdata/activemq/data:/data/activemq
+      - $DOCKERDIR/appdata/activemq/log:/var/log/activemq
