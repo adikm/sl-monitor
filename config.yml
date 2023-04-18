@@ -6,7 +6,11 @@ server:
     write: 10
     idle: 5
 database:
-  name: database.db # if changed, update it in the dockerfile
+  name: postgres
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
 traffic_api:
   authKey: # env TRAFFIC_API_AUTH_KEY
   url: https://api.trafikinfo.trafikverket.se/v2/data.json

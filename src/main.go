@@ -25,7 +25,7 @@ func main() {
 	/*
 		DATABASE
 	*/
-	db := prepareDatabase(cfg.Database.Name)
+	db := prepareDatabase(cfg.Database)
 	defer db.Close()
 
 	/*
@@ -91,8 +91,8 @@ func prepareNotificationService(db *sql.DB) *notifications.NotificationService {
 	return notifications.NewService(store)
 }
 
-func prepareDatabase(dbName string) *sql.DB {
-	sqlite := database.NewSqlite(dbName)
+func prepareDatabase(dbConfig config.Database) *sql.DB {
+	sqlite := database.NewPostgre(dbConfig)
 	db, err := sqlite.Connect()
 	if err != nil {
 		log.Fatal(err)

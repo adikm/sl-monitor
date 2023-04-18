@@ -3,8 +3,8 @@ package config
 import (
 	"github.com/kelseyhightower/envconfig"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"log"
+	"os"
 )
 
 type server struct {
@@ -17,8 +17,12 @@ type server struct {
 	} `yaml:"timeout"`
 }
 
-type database struct {
-	Name string `yaml:"name"`
+type Database struct {
+	Name     string `yaml:"name"`
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
 }
 
 type trafficAPI struct {
@@ -35,7 +39,7 @@ type mail struct {
 
 type Config struct {
 	Server     server     `yaml:"server"`
-	Database   database   `yaml:"database"`
+	Database   Database   `yaml:"database"`
 	TrafficAPI trafficAPI `yaml:"traffic_api"`
 	Mail       mail       `yaml:"mail"`
 }
@@ -48,7 +52,7 @@ func Load(file *string) *Config {
 }
 
 func loadCfgFile(file *string, c *Config) {
-	f, _ := ioutil.ReadFile(*file)
+	f, _ := os.ReadFile(*file)
 	must(yaml.Unmarshal(f, c))
 }
 
