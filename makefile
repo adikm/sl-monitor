@@ -3,7 +3,7 @@ build-deploy:
 	docker build --tag sl-monitor .
 
 run-deploy:
-	env DB_HOST="host.docker.internal" docker-compose -f docker-compose.yml up -d
+	docker-compose -f docker-compose.yml up -d
 
 stop-deploy:
 	docker-compose stop

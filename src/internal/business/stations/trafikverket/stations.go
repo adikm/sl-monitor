@@ -1,6 +1,7 @@
 package trafikverket
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -11,19 +12,25 @@ var cachedStation struct {
 
 // FetchStations fetches and caches result for 24 hours
 func (s *APIService) FetchStations() ([]Station, error) {
-	accessedMoreThan24Hours := time.Now().Sub(cachedStation.updated).Hours() > 24
-	if accessedMoreThan24Hours {
+	value := s.cache.FetchValue("stations")
+	result := new(stationsResult)
+	if value == "" {
 		request := buildStationsRequest(s.authKey)
-		result := new(stationsResult)
 		err := s.remoteClient.post(&request, &result)
 		if err != nil {
 			return nil, err
 		}
-		cachedStation.stations = result.stations()
-		cachedStation.updated = time.Now()
+		stations := result.stations()
+		marshal, _ := json.Marshal(stations)
+		s.cache.SetValue("stations", string(marshal))
+		return stations, nil
 	}
 
-	return cachedStation.stations, nil
+	err := json.Unmarshal([]byte(value), &result)
+	if err != nil {
+		return nil, err
+	}
+	return result.stations(), nil
 }
 
 func buildStationsRequest(authKey string) request {

@@ -12,21 +12,24 @@ import (
 	"sl-monitor/internal/business/stations"
 	"sl-monitor/internal/business/stations/trafikverket"
 	"sl-monitor/internal/business/users"
+	"sl-monitor/internal/cache"
 	"sl-monitor/internal/config"
 	"sl-monitor/internal/database"
 	"sl-monitor/internal/server/auth"
 	"sl-monitor/internal/server/response"
 	"sl-monitor/internal/smtp"
+	"strconv"
 )
 
 func main() {
 	cfg := loadCfg()
 
 	/*
-		DATABASE
+		DATABASE/CACHE
 	*/
 	db := prepareDatabase(cfg.Database)
 	defer db.Close()
+	client := cache.InitClient(cfg.Cache.Host, strconv.Itoa(cfg.Cache.Port), cfg.Cache.Password)
 
 	/*
 		BUSINESS
@@ -35,7 +38,7 @@ func main() {
 	mailer := smtp.NewMailer(cfg.Mail.SmtpHost, cfg.Mail.SmtpPort, cfg.Mail.From, cfg.Mail.Password, cfg.Mail.From, usersService)
 	notificationsService := prepareNotificationService(db)
 	notificationsHandler := notifications.NewHandler(notificationsService)
-	tvService := trafikverket.NewAPIService(cfg.TrafficAPI.AuthKey)
+	tvService := trafikverket.NewAPIService(client, cfg.TrafficAPI.AuthKey)
 	stationsHandler := stations.NewHandler(tvService)
 	usersHandler := users.NewHandler(usersService)
 	authHandler := auth.NewHandler(cfg)
