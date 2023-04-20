@@ -7,14 +7,14 @@ import (
 
 type Store interface {
 	Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int, stationCode string) (int, error)
-	FindByUserId(userId int) (*[]Notification, error)
-	FindAll(dayOfWeek internal.Weekday) (*[]Notification, error)
+	FindByUserId(userId int) ([]Notification, error)
+	FindAll(dayOfWeek internal.Weekday) ([]Notification, error)
 }
 
 type Service interface {
 	Create(timestamp time.Time, weekdays internal.WeekdaysSum, userId int, stationCode string) (*Notification, error)
-	FindAllForWeekday(weekday internal.Weekday) (*[]Notification, error)
-	findByUserId(userId int) (*[]Notification, error)
+	FindAllForWeekday(weekday internal.Weekday) ([]Notification, error)
+	findByUserId(userId int) ([]Notification, error)
 }
 
 type Notification struct {

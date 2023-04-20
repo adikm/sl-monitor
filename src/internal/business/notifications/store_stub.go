@@ -12,8 +12,8 @@ func (h *NotificationStoreStub) Create(timestamp time.Time, weekdays internal.We
 	return 125, nil
 }
 
-func (h *NotificationStoreStub) FindByUserId(userId int) (*[]Notification, error) {
-	return &[]Notification{{
+func (h *NotificationStoreStub) FindByUserId(userId int) ([]Notification, error) {
+	return []Notification{{
 		Id:        1,
 		Timestamp: time.Unix(12345, 0),
 		Weekdays:  []internal.Weekday{internal.Monday, internal.Wednesday},
@@ -21,11 +21,11 @@ func (h *NotificationStoreStub) FindByUserId(userId int) (*[]Notification, error
 	}}, nil
 }
 
-func (h *NotificationStoreStub) FindAll(weekday internal.Weekday) (*[]Notification, error) {
-	return &[]Notification{{
+func (h *NotificationStoreStub) FindAll(dayOfWeek internal.Weekday) ([]Notification, error) {
+	return []Notification{{
 		Id:        2,
 		Timestamp: time.Unix(12346, 0),
-		Weekdays:  []internal.Weekday{weekday},
+		Weekdays:  []internal.Weekday{dayOfWeek},
 		UserId:    1,
 	}}, nil
 }

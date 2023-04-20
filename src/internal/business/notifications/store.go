@@ -32,7 +32,7 @@ func (h *NotificationStore) Create(timestamp time.Time, weekdays internal.Weekda
 	return int(insertId), nil
 }
 
-func (h *NotificationStore) FindByUserId(userId int) (*[]Notification, error) {
+func (h *NotificationStore) FindByUserId(userId int) ([]Notification, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
@@ -46,13 +46,13 @@ func (h *NotificationStore) FindByUserId(userId int) (*[]Notification, error) {
 	return parseNotificationRows(result)
 }
 
-func (h *NotificationStore) FindAll(weekday internal.Weekday) (*[]Notification, error) {
+func (h *NotificationStore) FindAll(dayOfWeek internal.Weekday) ([]Notification, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	query := "SELECT * FROM notifications WHERE weekdays & $1"
 
-	result, err := h.QueryContext(ctx, query, weekday)
+	result, err := h.QueryContext(ctx, query, dayOfWeek)
 
 	if err != nil {
 		return nil, err
@@ -61,8 +61,8 @@ func (h *NotificationStore) FindAll(weekday internal.Weekday) (*[]Notification, 
 	return parseNotificationRows(result)
 }
 
-func parseNotificationRows(result *sql.Rows) (*[]Notification, error) {
-	var notifications []Notification
+func parseNotificationRows(result *sql.Rows) ([]Notification, error) {
+	notifications := make([]Notification, 0)
 	var err error
 	for result.Next() {
 		var n Notification
@@ -73,5 +73,5 @@ func parseNotificationRows(result *sql.Rows) (*[]Notification, error) {
 		n.Weekdays = internal.WeekdaysSum(weekdays).AsWeekdays()
 		notifications = append(notifications, n)
 	}
-	return &notifications, err
+	return notifications, err
 }

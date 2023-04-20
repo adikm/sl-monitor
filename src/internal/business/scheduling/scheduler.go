@@ -30,7 +30,7 @@ func (s *Scheduler) ScheduleNotifications() []Result {
 	log.Println("Scheduling notifications")
 	today := internal.TodayWeekday()
 	notificationsToSchedule, err := s.nService.FindAllForWeekday(today)
-	log.Printf("Number of notifications to schedule=%d\n", len(*notificationsToSchedule))
+	log.Printf("Number of notifications to schedule=%d\n", len(notificationsToSchedule))
 	if err != nil {
 		log.Println(err)
 		return nil
@@ -38,7 +38,7 @@ func (s *Scheduler) ScheduleNotifications() []Result {
 
 	var results []Result
 	var wg sync.WaitGroup
-	for _, n := range *notificationsToSchedule {
+	for _, n := range notificationsToSchedule {
 		now := time.Now()
 		executionDate := s.getExecutionDate(now, n) // always today and time that's saved in db
 		if time.Now().After(executionDate) {        // if current time is already after the expected schedule time, skip - helpful during redeployment

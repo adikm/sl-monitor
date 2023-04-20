@@ -24,10 +24,10 @@ func (s *NotificationService) Create(timestamp time.Time, weekdays internal.Week
 	return &Notification{id, timestamp, weekdays.AsWeekdays(), userId, stationCode}, nil
 }
 
-func (s *NotificationService) FindAllForWeekday(weekday internal.Weekday) (*[]Notification, error) {
+func (s *NotificationService) FindAllForWeekday(weekday internal.Weekday) ([]Notification, error) {
 	return s.store.FindAll(weekday)
 }
 
-func (s *NotificationService) findByUserId(userId int) (*[]Notification, error) {
+func (s *NotificationService) findByUserId(userId int) ([]Notification, error) {
 	return s.store.FindByUserId(userId)
 }
