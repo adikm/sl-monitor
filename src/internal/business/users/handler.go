@@ -22,12 +22,24 @@ func (uh *Handler) create(w http.ResponseWriter, r *http.Request) {
 		response.BadRequest(w, r, err)
 		return
 	}
-	n, err := uh.service.Create(input)
+
+	exists, err := uh.service.UserExists(input.Email)
 	if err != nil {
 		response.ServerError(w, r, err)
 		return
 	}
-	err = response.JSON(w, http.StatusOK, n)
+
+	if exists {
+		response.ErrorMessage(w, http.StatusBadRequest, "User with given e-mail already exists", nil)
+		return
+	}
+
+	u, err := uh.service.Create(input)
+	if err != nil {
+		response.ServerError(w, r, err)
+		return
+	}
+	err = response.JSON(w, http.StatusOK, u)
 	if err != nil {
 		response.ServerError(w, r, err)
 	}

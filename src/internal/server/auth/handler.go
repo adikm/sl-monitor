@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/google/uuid"
 	"net/http"
+	"sl-monitor/internal/business/users"
 	"sl-monitor/internal/config"
 	"sl-monitor/internal/server"
 	"sl-monitor/internal/server/response"
@@ -11,21 +12,17 @@ import (
 
 type Handler struct {
 	config *config.Config
+	users  users.Service
 }
 
-func NewHandler(config *config.Config) *Handler {
-	return &Handler{config}
-}
-
-var users = map[string]string{ // TODO get rid
-	"user1": "password1",
-	"user2": "password2",
+func NewHandler(config *config.Config, users users.Service) *Handler {
+	return &Handler{config, users}
 }
 
 func (ah *Handler) login(w http.ResponseWriter, r *http.Request) {
 	type Credentials struct {
-		Password string `json:"password"`
-		Username string `json:"username"`
+		Pwd   string `json:"password"`
+		Email string `json:"email"`
 	}
 
 	var creds Credentials
@@ -37,9 +34,9 @@ func (ah *Handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expectedPassword, ok := users[creds.Username]
+	idPass, err := ah.users.FindPasswordByEmail(creds.Email)
 
-	if !ok || expectedPassword != creds.Password {
+	if err != nil || !users.CheckPasswordHash(creds.Pwd, idPass.Pwd) {
 		response.Unauthorized(w, r)
 		return
 	}
@@ -47,9 +44,9 @@ func (ah *Handler) login(w http.ResponseWriter, r *http.Request) {
 	sessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(120 * time.Second)
 	Sessions[sessionToken] = session{
-		Username: creds.Username,
-		UserId:   123, // TODO
-		Expiry:   expiresAt,
+		Email:  creds.Email,
+		UserId: idPass.Id,
+		Expiry: expiresAt,
 	}
 
 	// Finally, we set the client cookie for "session_token" as the session token we just generated

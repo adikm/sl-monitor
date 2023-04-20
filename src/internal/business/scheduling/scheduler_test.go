@@ -8,7 +8,7 @@ import (
 )
 
 func TestScheduler_ScheduleNotifications(t *testing.T) {
-	scheduler := Scheduler{nService: &notifications.NotificationServiceStub{}, sender: &Sender{&users.UserServiceStub{}, &trafikverket.ServiceStub{}}, mailer: nil} // TODO
+	scheduler := Scheduler{nService: &notifications.NotificationServiceStub{}, sender: &Sender{users.NewService(users.UserStoreStub{}), &trafikverket.ServiceStub{}}, mailer: nil} // TODO
 	got := scheduler.ScheduleNotifications()
 
 	if len(got) != 3 {

@@ -38,7 +38,7 @@ func main() {
 	tvService := trafikverket.NewAPIService(cfg.TrafficAPI.AuthKey)
 	stationsHandler := stations.NewHandler(tvService)
 	usersHandler := users.NewHandler(usersService)
-	authHandler := auth.NewHandler(cfg)
+	authHandler := auth.NewHandler(cfg, usersService)
 
 	log.Printf("starting server on %s \n", cfg.Server.Addr)
 

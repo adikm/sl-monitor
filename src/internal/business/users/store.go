@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -14,31 +15,29 @@ func NewStore(db *sql.DB) *UserStore {
 	return &UserStore{db}
 }
 
-func (h *UserStore) create(r UserRequest) (int, error) {
+func (h *UserStore) create(name, mail, password string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
-	query := "INSERT INTO users (email, name, password) VALUES ($1, $2, $3);"
+	query := "INSERT INTO users (email, name, password) VALUES ($1, $2, $3) RETURNING id;"
 
-	id, err := h.ExecContext(ctx, query, r.Email, r.Name, r.Password)
+	var id int
+	err := h.QueryRowContext(ctx, query, mail, name, password).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
-	insertId, err := id.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return int(insertId), nil
+
+	return id, nil
 }
 
-func (h *UserStore) findById(id int) (*UserResponse, error) {
+func (h *UserStore) findById(id int) (*BasicUser, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	query := "SELECT id, email, name FROM users WHERE id = $1"
 
 	result := h.QueryRowContext(ctx, query, id)
-	var u UserResponse
+	var u BasicUser
 
 	if err := result.Scan(&u.Id, &u.Email, &u.Name); err != nil {
 		return nil, err
@@ -47,15 +46,38 @@ func (h *UserStore) findById(id int) (*UserResponse, error) {
 	return &u, nil
 }
 
-//func parseRows(result *sql.Rows) (*[]UserRequest, error) {
-//	var users []UserRequest
-//	var err error
-//	for result.Next() {
-//		var u UserRequest
-//		if err = result.Scan(&u.id, &u.email, &u.name); err != nil {
-//			break
-//		}
-//		users = append(users, u)
-//	}
-//	return &users, err
-//}
+func (h *UserStore) findPasswordByEmail(email string) (*UserIdAndPwd, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	query := "SELECT id, password FROM users WHERE email = $1"
+
+	result := h.QueryRowContext(ctx, query, email)
+	var user UserIdAndPwd
+
+	if err := result.Scan(&user.Id, &user.Pwd); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (h *UserStore) userExists(email string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	query := "SELECT EXISTS(SELECT 1 from users WHERE email=$1)"
+
+	var exists = false
+	err := h.QueryRowContext(ctx, query, email).Scan(&exists)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Println(err)
+			return exists, err
+		}
+		return exists, nil
+	}
+
+	return exists, nil
+}

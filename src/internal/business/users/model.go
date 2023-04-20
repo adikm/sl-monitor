@@ -1,22 +1,37 @@
 package users
 
 type Store interface {
-	create(r UserRequest) (int, error)
-	findById(id int) (*UserResponse, error)
+	create(name string, mail string, password string) (int, error)
+	findById(id int) (*BasicUser, error)
+
+	findPasswordByEmail(email string) (*UserIdAndPwd, error)
+
+	userExists(email string) (bool, error)
 }
 
 type Service interface {
-	Create(r UserRequest) (*UserResponse, error)
-	FindById(userId int) (*UserResponse, error)
+	Create(r UserRequest) (*BasicUser, error)
+	FindById(userId int) (*BasicUser, error)
+
+	FindPasswordByEmail(email string) (*UserIdAndPwd, error)
+
+	UserExists(email string) (bool, error)
 }
 
 type UserRequest struct {
-	Email, Name, Password string `json:""`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
-type UserResponse struct {
+type BasicUser struct {
 	Id          int
 	Email, Name string
+}
+
+type UserIdAndPwd struct {
+	Id  int
+	Pwd string
 }
 
 var _ Store = &UserStore{}

@@ -14,5 +14,6 @@ require (
 require (
 	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/lib/pq v1.10.8 // indirect
+	golang.org/x/crypto v0.8.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 )
