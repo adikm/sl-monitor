@@ -27,7 +27,7 @@ func TestNotificationService_Create(t *testing.T) {
 func TestNotificationService_FindAllForWeekday(t *testing.T) {
 	s := NotificationService{&NotificationStoreStub{}}
 
-	want := &[]Notification{{
+	want := []Notification{{
 		Id:        2,
 		Timestamp: time.Unix(12346, 0),
 		Weekdays:  []internal.Weekday{internal.Wednesday},
@@ -43,7 +43,7 @@ func TestNotificationService_FindAllForWeekday(t *testing.T) {
 func TestNotificationService_findByUserId(t *testing.T) {
 	s := NotificationService{&NotificationStoreStub{}}
 
-	want := &[]Notification{{
+	want := []Notification{{
 		Id:        1,
 		Timestamp: time.Unix(12345, 0),
 		Weekdays:  []internal.Weekday{internal.Monday, internal.Wednesday},
