@@ -19,7 +19,8 @@ func Test_buildStationsRequest(t *testing.T) {
 }
 
 func TestRemoteService_FetchStations(t *testing.T) {
-	service := APIService{&remoteClientStub{}, &cacheClientStub{store: map[string]string{}}, ""}
+	cache.InitStub()
+	service := APIService{&remoteClientStub{}, ""}
 
 	stations, err := service.FetchStations()
 
@@ -46,18 +47,4 @@ func (_ *remoteClientStub) post(r *request, dst interface{}) error {
 	return nil
 }
 
-type cacheClientStub struct {
-	store map[string]string
-}
-
-func (c cacheClientStub) FetchValue(key string) string {
-	return c.store[key]
-}
-
-func (c cacheClientStub) SetValue(key, value string) bool {
-	c.store[key] = value
-	return true
-}
-
 var _ client = &remoteClientStub{}
-var _ cache.Client = &cacheClientStub{}

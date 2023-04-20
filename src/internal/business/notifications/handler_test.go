@@ -12,7 +12,7 @@ import (
 )
 
 func TestNotificationHandler_findForCurrentUser(t *testing.T) {
-	cache.Instance = &cache.Stub{}
+	cache.InitStub()
 
 	req, err := http.NewRequest("GET", "/notifications/all", nil)
 	req.AddCookie(&http.Cookie{Name: "session_token"})
