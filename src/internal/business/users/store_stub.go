@@ -20,6 +20,9 @@ func (u UserStoreStub) create(name string, email string, password string) (int, 
 }
 
 func (u UserStoreStub) findById(id int) (*BasicUser, error) {
+	if id == 0 {
+		return &BasicUser{0, "1@1.com", "Mister User"}, nil
+	}
 	for _, user := range users {
 		if user.Id == id {
 			return user.BasicUser, nil
