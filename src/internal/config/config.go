@@ -1,6 +1,8 @@
 package config
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/kelseyhightower/envconfig"
 	"gopkg.in/yaml.v3"
 	"log"
@@ -25,6 +27,12 @@ type Database struct {
 	Password string `yaml:"password"`
 }
 
+type cache struct {
+	Host     string `yaml:"host" envconfig:"CACHE_HOST"`
+	Port     int    `yaml:"port"`
+	Password string `yaml:"password"`
+}
+
 type trafficAPI struct {
 	AuthKey string `yaml:"authKey" envconfig:"TRAFFIC_API_AUTH_KEY"`
 	URL     string `yaml:"url"`
@@ -40,6 +48,7 @@ type mail struct {
 type Config struct {
 	Server     server     `yaml:"server"`
 	Database   Database   `yaml:"database"`
+	Cache      cache      `yaml:"cache"`
 	TrafficAPI trafficAPI `yaml:"traffic_api"`
 	Mail       mail       `yaml:"mail"`
 }
@@ -48,6 +57,7 @@ func Load(file *string) *Config {
 	var cfg Config
 	loadCfgFile(file, &cfg)
 	loadEnv(&cfg)
+	prettyPrint(&cfg)
 	return &cfg
 }
 
@@ -64,4 +74,16 @@ func must(err error) {
 	if err != nil {
 		log.Fatal("Unable to load cfg ", err)
 	}
+}
+
+func prettyPrint(data *Config) {
+	fmt.Println("Config loaded: ")
+	var p []byte
+	//    var err := error
+	p, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%s \n", p)
 }

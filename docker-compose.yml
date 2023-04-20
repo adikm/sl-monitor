@@ -10,7 +10,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - $DOCKERDIR/appdata/redis/data:/data
+      - ~/appdata/redis/data:/data
 
   db:
     container_name: db
@@ -23,7 +23,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - $DOCKERDIR/appdata/db:/var/lib/postgresql/data
+      - ~/appdata/db:/var/lib/postgresql/data
 
   mq:
     image: symptoma/activemq:latest
@@ -31,8 +31,8 @@ services:
     ports:
       - "61616:61616"
     volumes:
-      - $DOCKERDIR/appdata/activemq/data:/data/activemq
-      - $DOCKERDIR/appdata/activemq/log:/var/log/activemq
+      - ~/appdata/activemq/data:/data/activemq
+      - ~/appdata/activemq/log:/var/log/activemq
 
   sl-monitor-app:
     container_name: sl-monitor-app
@@ -42,7 +42,8 @@ services:
       - TRAFFIC_API_AUTH_KEY=$TRAFFIC_API_AUTH_KEY
       - MAIL_USERNAME=$MAIL_USERNAME
       - MAIL_PASSWORD=$MAIL_PASSWORD
-      - DB_HOST=$DB_HOST
+      - DB_HOST=host.docker.internal
+      - CACHE_HOST=host.docker.internal
     ports:
       - "4444:4444"
     depends_on:
