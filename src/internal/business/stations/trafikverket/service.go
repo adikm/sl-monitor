@@ -1,7 +1,5 @@
 package trafikverket
 
-import "sl-monitor/internal/cache"
-
 type Service interface {
 	FetchStations() ([]Station, error)
 	FetchDepartures(stationCode string) ([]Train, error)
@@ -9,12 +7,11 @@ type Service interface {
 
 type APIService struct {
 	remoteClient client
-	cache        cache.Client
 	authKey      string
 }
 
-func NewAPIService(cache cache.Client, authKey string) *APIService {
-	return &APIService{&remoteClient{}, cache, authKey}
+func NewAPIService(authKey string) *APIService {
+	return &APIService{&remoteClient{}, authKey}
 }
 
 var _ Service = &APIService{}

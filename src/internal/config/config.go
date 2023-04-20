@@ -77,12 +77,12 @@ func must(err error) {
 }
 
 func prettyPrint(data *Config) {
-	fmt.Println("Config loaded: ")
+	log.Println("Config loaded: ")
 	var p []byte
 	//    var err := error
 	p, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	fmt.Printf("%s \n", p)

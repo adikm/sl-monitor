@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"log"
 	"time"
 )
 
@@ -56,7 +56,10 @@ func (h *UserStore) findPasswordByEmail(email string) (*UserIdAndPwd, error) {
 	var user UserIdAndPwd
 
 	if err := result.Scan(&user.Id, &user.Pwd); err != nil {
-		fmt.Println(err)
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		log.Println(err)
 		return nil, err
 	}
 
@@ -73,7 +76,7 @@ func (h *UserStore) userExists(email string) (bool, error) {
 	err := h.QueryRowContext(ctx, query, email).Scan(&exists)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			fmt.Println(err)
+			log.Println(err)
 			return exists, err
 		}
 		return exists, nil

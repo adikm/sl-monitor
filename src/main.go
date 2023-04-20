@@ -29,7 +29,7 @@ func main() {
 	*/
 	db := prepareDatabase(cfg.Database)
 	defer db.Close()
-	client := cache.InitClient(cfg.Cache.Host, strconv.Itoa(cfg.Cache.Port), cfg.Cache.Password)
+	cache.InitClient(cfg.Cache.Host, strconv.Itoa(cfg.Cache.Port), cfg.Cache.Password)
 
 	/*
 		BUSINESS
@@ -38,7 +38,7 @@ func main() {
 	mailer := smtp.NewMailer(cfg.Mail.SmtpHost, cfg.Mail.SmtpPort, cfg.Mail.From, cfg.Mail.Password, cfg.Mail.From, usersService)
 	notificationsService := prepareNotificationService(db)
 	notificationsHandler := notifications.NewHandler(notificationsService)
-	tvService := trafikverket.NewAPIService(client, cfg.TrafficAPI.AuthKey)
+	tvService := trafikverket.NewAPIService(cfg.TrafficAPI.AuthKey)
 	stationsHandler := stations.NewHandler(tvService)
 	usersHandler := users.NewHandler(usersService)
 	authHandler := auth.NewHandler(cfg, usersService)

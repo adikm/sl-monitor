@@ -1,11 +1,13 @@
 package notifications
 
 import (
+	"log"
 	"net/http"
 	"sl-monitor/internal"
+	"sl-monitor/internal/cache"
 	"sl-monitor/internal/server"
-	"sl-monitor/internal/server/auth"
 	response "sl-monitor/internal/server/response"
+	"strconv"
 	"time"
 )
 
@@ -59,5 +61,14 @@ func (nh *Handler) findForCurrentUser(w http.ResponseWriter, r *http.Request) {
 func currentUserId(r *http.Request) int {
 	cookie, _ := r.Cookie("session_token")
 	sessionToken := cookie.Value
-	return auth.Sessions[sessionToken].UserId
+	value := cache.Instance.FetchValue(sessionToken)
+	if value == "" {
+		return 0
+	}
+	atoi, err := strconv.Atoi(value)
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	return atoi
 }

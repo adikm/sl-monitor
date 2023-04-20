@@ -6,11 +6,14 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"sl-monitor/internal"
+	"sl-monitor/internal/cache"
 	"testing"
 	"time"
 )
 
 func TestNotificationHandler_findForCurrentUser(t *testing.T) {
+	cache.Instance = &cache.Stub{}
+
 	req, err := http.NewRequest("GET", "/notifications/all", nil)
 	req.AddCookie(&http.Cookie{Name: "session_token"})
 
