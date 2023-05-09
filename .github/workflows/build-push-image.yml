@@ -24,11 +24,10 @@ jobs:
           service_account_key: ${{ secrets.GOOGLE_CLOUD_AUTH }}
           project_id: slmonitor
 
-      - name: Configure Docker
-        uses: docker/setup-docker@v1
+      - name: Set up Docker CLI
+        uses: docker/cli@v2.2.0
         with:
-          dockerfile: Dockerfile
-          context: .
+          version: '20.10.8'
 
       - name: Get latest git tag
         run: |
