@@ -10,9 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      LATEST_TAG: ""
-      VERSION: ""
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
