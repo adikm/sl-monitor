@@ -17,11 +17,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_AUTH }}
+
       - name: Set up Google Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v1'
         with:
           version: '>= 363.0.0'
-          service_account_key: ${{ secrets.GOOGLE_CLOUD_AUTH }}
           project_id: slmonitor
 
       - name: Set up Docker Buildx
@@ -44,12 +49,6 @@ jobs:
           tags: |
             gcr.io/slmonitor/slmonitor-app:latest
             gcr.io/slmonitor/slmonitor-app:$VERSION
-
-
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GOOGLE_CLOUD_AUTH }}
 
       - name: Push Docker image to Container Registry
         run: |
