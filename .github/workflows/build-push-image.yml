@@ -1,6 +1,6 @@
 # This workflow will build a Docker image with SL Monitor, push it to Container Registry and then deploy to Cloud Run
 
-name: Deploy to Cloud Run
+name: Build and push Docker Image
 
 on:
   push:
@@ -10,13 +10,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      LATEST_TAG: ${{ env.LATEST_TAG }}
+      VERSION: ${{ env.VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
+        uses: 'google-github-actions/setup-gcloud@v1'
         with:
+          version: '>= 363.0.0'
           service_account_key: ${{ secrets.GOOGLE_CLOUD_AUTH }}
           project_id: slmonitor
 
