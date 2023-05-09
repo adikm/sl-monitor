@@ -1,0 +1,51 @@
+# This workflow will build a Docker image with SL Monitor, push it to Container Registry and then deploy to Cloud Run
+
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_AUTH }}
+          project_id: slmonitor
+
+      - name: Configure Docker
+        uses: docker/setup-docker@v1
+        with:
+          dockerfile: Dockerfile
+          context: .
+
+      - name: Get latest git tag
+        run: |
+          git fetch --tags
+          export LATEST_TAG=$(git describe --abbrev=0 --tags)
+
+      - name: Set semantic version
+        run: |
+          export VERSION=$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')
+
+      - name: Build and tag Docker image
+        run: |
+          docker build -t gcr.io/slmonitor/slmonitor-app:latest .
+          docker tag gcr.io/slmonitor/slmonitor-app:latest gcr.io/slmonitor/slmonitor-app:${{ VERSION }}
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v0.6.0
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CLOUD_AUTH }}
+
+      - name: Push Docker image to Container Registry
+        run: |
+          docker push gcr.io/slmonitor/slmonitor-app:latest
+          docker push gcr.io/slmonitor/slmonitor-app:${{ VERSION }}
