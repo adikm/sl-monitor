@@ -126,7 +126,6 @@ resource "google_sql_user" "postgresql_user" {
   name     = "postgres"
   project  = var.projectName
   instance = google_sql_database_instance.postgresql.name
-  host     = "%"
   password = "postgres"
 }
 
@@ -148,4 +147,11 @@ resource "google_redis_instance" "slmonitor_cache" {
 output "cache_ip" {
   description = "The IP address of the cache instance."
   value       = google_redis_instance.slmonitor_cache.host
+}
+
+# CONTAINER REGISTRY
+
+resource "google_container_registry" "registry" {
+  project  = var.projectName
+  location = "EU"
 }

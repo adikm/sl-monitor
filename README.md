@@ -14,6 +14,34 @@ The only prerequisite is Docker installed on your machine. Also you should get T
 
 ![Diagram](architecture.png)
 
+### Terraforming Google Cloud Platform
+
+Remember to login to GCP
+
+```shell
+gcloud auth application-default login
+```
+
+before running
+
+```shell
+terraform init
+terraform apply
+```
+
+To synchronize with remote infrastructure, run:
+
+```shell
+terraform import google_compute_network.vpc_network slmonitor-network
+terraform import google_compute_firewall.allow_ssh allow-ssh    
+terraform import google_compute_address.static_ip slmonitor-instance
+terraform import google_compute_instance.vm_instance slmonitor-instance
+terraform import google_sql_database_instance.postgresql slmonitor-db1
+terraform import google_sql_database.postgresql_db slmonitor/slmonitor-db1/slmonitor
+terraform import google_sql_user.postgresql_user slmonitor/slmonitor-db1/postgres
+terraform import google_redis_instance.slmonitor_cache slmonitor
+```
+
 ### Running
 
 1. Open [config.yml](config.yml) and configure environment variables as stated in the file.
