@@ -41,9 +41,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./
-          tags:
-            - gcr.io/slmonitor/slmonitor-app:latest
-            - gcr.io/slmonitor/slmonitor-app:$VERSION
+          tags: |
+            gcr.io/slmonitor/slmonitor-app:latest
+            gcr.io/slmonitor/slmonitor-app:$VERSION
 
 
       - name: Authenticate with Google Cloud
