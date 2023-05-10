@@ -17,24 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: 'projects/808738102708/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
           service_account: 'github@slmonitor.iam.gserviceaccount.com'
           project_id: slmonitor
-
-      - name: Get latest git tag
-        run: |
-          git fetch --tags
-          echo "LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
-          echo $LATEST_TAG
-
-      - name: Set semantic version
-        run: |
-          echo "VERSION=$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" >> $GITHUB_ENV
-          echo "$VERSION"
 
       - name: Authenticate docker
         run: |
@@ -50,11 +38,3 @@ jobs:
           tags: |
             "gcr.io/slmonitor/slmonitor-app:latest"
           push: true
-#      - name: Build Docker Image
-#        run: docker build -t sl-monitor-app:latest . #build the docker image
-#
-#
-#      - name: Push Docker Image to Container Registry GCR
-#        run: |-
-#            docker tag sl-monitor-app:latest gcr.io/slmonitor/sl-monitor-app:latest
-#            docker push gcr.io/slmonitor/sl-monitor-app:latest
