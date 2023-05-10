@@ -1,4 +1,4 @@
-# sl-monitor [![Test](https://github.com/adikm/sl-monitor/actions/workflows/test.yml/badge.svg)](https://github.com/adikm/sl-monitor/actions/workflows/test.yml)
+# sl-monitor [![Test & deploy](https://github.com/adikm/sl-monitor/actions/workflows/github-ci.yml/badge.svg)](https://github.com/adikm/sl-monitor/actions/workflows/github-ci.yml)
 
 Storstockholms Lokaltrafik train monitor
 
@@ -32,6 +32,9 @@ terraform apply
 To synchronize with remote infrastructure, run:
 
 ```shell
+terraform import module.project_services.google_project_service.project_services "oslogin.googleapis.com"
+terraform import module.project_services.google_project_service.project_services "compute.googleapis.com"
+
 terraform import google_compute_network.vpc_network slmonitor-network
 terraform import google_compute_firewall.allow_ssh allow-ssh    
 terraform import google_compute_address.static_ip slmonitor-instance
