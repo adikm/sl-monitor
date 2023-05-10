@@ -30,7 +30,10 @@ jobs:
         run: go test -v ./...
 
   deploy:
+    needs: [ build ]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     permissions:
       contents: 'read'
       id-token: 'write'
