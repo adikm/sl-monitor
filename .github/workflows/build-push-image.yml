@@ -35,7 +35,7 @@ jobs:
 
       - name: Set semantic version
         run: |
-          echo "$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" > $VERSION
+          echo "$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" >> $VERSION
 
       - name: Build and tag Docker image
         uses: docker/build-push-action@v2
