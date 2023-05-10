@@ -29,6 +29,33 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-      - name: Deploy
-        if: github.ref == 'refs/heads/main'
-        uses: ./.github/workflows/deploy
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: 'projects/808738102708/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'github@slmonitor.iam.gserviceaccount.com'
+          project_id: slmonitor
+
+      - name: Authenticate docker
+        run: |
+          gcloud auth configure-docker --quiet
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and tag Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./
+          tags: |
+            "gcr.io/slmonitor/slmonitor-app:latest"
+          push: true
