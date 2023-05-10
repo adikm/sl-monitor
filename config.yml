@@ -6,7 +6,7 @@ server:
     write: 10
     idle: 5
 database:
-  name: postgres
+  name: slmonitor
   host: localhost # env DB_HOST
   port: 5432
   user: postgres
