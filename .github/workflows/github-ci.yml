@@ -10,7 +10,7 @@ on:
     branches: [ '*' ]
 
 jobs:
-  build:
+  test:
     defaults:
       run:
         working-directory: src
@@ -22,9 +22,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 'stable'
-
-      - name: Build
-        run: go build -v ./...
 
       - name: Test
         run: go test -v ./...
