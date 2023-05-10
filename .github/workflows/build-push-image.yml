@@ -23,11 +23,6 @@ jobs:
         with:
           workload_identity_provider: 'projects/808738102708/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
           service_account: 'github@slmonitor.iam.gserviceaccount.com'
-
-      - name: Set up Google Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v1'
-        with:
-          version: '>= 363.0.0'
           project_id: slmonitor
 
       - name: Set up Docker Buildx
