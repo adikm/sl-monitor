@@ -5,7 +5,7 @@ name: Build and push Docker Image
 on:
   push:
     branches:
-      - main
+      - gh-actions
 
 jobs:
   deploy:
@@ -28,12 +28,12 @@ jobs:
       - name: Get latest git tag
         run: |
           git fetch --tags
-          echo "TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $LATEST_TAG
+          echo "LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
           echo $env.LATEST_TAG
 
       - name: Set semantic version
         run: |
-          echo "VRSN=$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" >> $VERSION
+          echo "VERSION=$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" >> $GITHUB_ENV
           echo $env.VERSION
 
       - name: Set up Docker Buildx
