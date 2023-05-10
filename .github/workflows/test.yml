@@ -30,6 +30,7 @@ jobs:
         run: go test -v ./...
 
   call-deploy:
-    rules:
-      - if: '$CI_COMMIT_REF_NAME == "master"'
+    only:
+      refs:
+        - main
     uses: ./.github/workflows/deploy-app.yml
