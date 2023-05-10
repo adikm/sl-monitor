@@ -31,11 +31,13 @@ jobs:
       - name: Get latest git tag
         run: |
           git fetch --tags
-          echo "$(git describe --tags `git rev-list --tags --max-count=1`)" >> $LATEST_TAG
+          echo "TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $LATEST_TAG
+          echo $env.LATEST_TAG
 
       - name: Set semantic version
         run: |
-          echo "$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" >> $VERSION
+          echo "VRSN=$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" >> $VERSION
+          echo $env.VERSION
 
       - name: Build and tag Docker image
         uses: docker/build-push-action@v2
