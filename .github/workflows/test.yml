@@ -30,7 +30,8 @@ jobs:
         run: go test -v ./...
 
   call-deploy:
-    only:
-      refs:
-        - main
+    workflow:
+      only:
+        refs:
+          - main
     uses: ./.github/workflows/deploy-app.yml
