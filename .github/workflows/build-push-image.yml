@@ -31,12 +31,11 @@ jobs:
       - name: Get latest git tag
         run: |
           git fetch --tags
-          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "$(git describe --tags `git rev-list --tags --max-count=1`)" >> $LATEST_TAG
 
       - name: Set semantic version
         run: |
-          VERSION=$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')
-          echo "New version: ${VERSION}"
+          echo "$(echo ${LATEST_TAG} | awk -F'[.-]' '{printf "%d.%d.%d", $1, $2, $3+1}')" > $VERSION
 
       - name: Build and tag Docker image
         uses: docker/build-push-action@v2
@@ -44,9 +43,9 @@ jobs:
           context: ./
           tags: |
             "gcr.io/slmonitor/slmonitor-app:latest"
-            "gcr.io/slmonitor/slmonitor-app:${VERSION}"
+            "gcr.io/slmonitor/slmonitor-app:${env.VERSION}"
 
       - name: Push Docker image to Container Registry
         run: |
           "docker push gcr.io/slmonitor/slmonitor-app:latest"
-          "docker push gcr.io/slmonitor/slmonitor-app:${VERSION}"
+          "docker push gcr.io/slmonitor/slmonitor-app:${env.VERSION}"
