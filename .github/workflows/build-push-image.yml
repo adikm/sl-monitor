@@ -11,9 +11,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: | 
-        'read',
-        'write'
+      contents: [ 'read', 'write' ]
       id-token: 'write'
     steps:
       - name: Checkout code
