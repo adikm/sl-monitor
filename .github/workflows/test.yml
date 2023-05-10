@@ -28,7 +28,7 @@ jobs:
 
       - name: Test
         run: go test -v ./...
-
-  call-deploy:
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/deploy-app.yml
+      - name: Deploy
+        call-deploy:
+          if: github.ref == 'refs/heads/main'
+          uses: ./.github/workflows/deploy-app.yml
