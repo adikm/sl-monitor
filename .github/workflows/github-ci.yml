@@ -48,7 +48,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push Docker image to GCR"=
+      - name: Build and push Docker image to GCR
         run: |-
           gcloud auth configure-docker --quiet
           docker build -t gcr.io/slmonitor/slmonitor-app:latest .
