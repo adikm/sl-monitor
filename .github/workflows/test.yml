@@ -31,4 +31,4 @@ jobs:
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'
-        uses: ./.github/workflows/deploy-app.yml
+        uses: ./.github/workflows/deploy
