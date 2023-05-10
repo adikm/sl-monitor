@@ -43,10 +43,10 @@ jobs:
         with:
           context: ./
           tags: |
-            gcr.io/slmonitor/slmonitor-app:latest
-            gcr.io/slmonitor/slmonitor-app:$VERSION
+            "gcr.io/slmonitor/slmonitor-app:latest"
+            "gcr.io/slmonitor/slmonitor-app:${VERSION}"
 
       - name: Push Docker image to Container Registry
         run: |
-          docker push gcr.io/slmonitor/slmonitor-app:latest
-          docker push gcr.io/slmonitor/slmonitor-app:$VERSION
+          "docker push gcr.io/slmonitor/slmonitor-app:latest"
+          "docker push gcr.io/slmonitor/slmonitor-app:${VERSION}"
