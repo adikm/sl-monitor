@@ -1,5 +1,5 @@
 server:
-  addr: :4444
+  addr: :8080
   timeout:
     server: 30
     read: 15
@@ -9,8 +9,8 @@ database:
   name: slmonitor
   host: localhost # env DB_HOST
   port: 5432
-  user: postgres
-  password: postgres
+  user: slmonitor-user
+  password: slmonitor-pwd
 cache:
   host: localhost # env CACHE_HOST
   port: 6379

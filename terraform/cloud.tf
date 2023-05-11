@@ -78,10 +78,11 @@ output "vm_ip" {
 # PostgreSQL
 
 resource "google_sql_database_instance" "postgresql" {
-  name             = "${var.projectName}-db1"
-  project          = var.projectName
-  region           = var.region
-  database_version = "POSTGRES_11"
+  name                = "${var.projectName}-db1"
+  deletion_protection = false
+  project             = var.projectName
+  region              = var.region
+  database_version    = "POSTGRES_11"
 
   settings {
     tier              = "db-f1-micro"
@@ -119,14 +120,14 @@ resource "google_sql_database" "postgresql_db" {
   name     = "slmonitor"
   project  = var.projectName
   instance = google_sql_database_instance.postgresql.name
-  charset  = "UTF-8"
+  charset  = "UTF8"
 }
 
 resource "google_sql_user" "postgresql_user" {
-  name     = "postgres"
+  name     = "slmonitor-user"
   project  = var.projectName
   instance = google_sql_database_instance.postgresql.name
-  password = "postgres"
+  password = "slmonitor-pwd"
 }
 
 output db_instance_ip {
@@ -154,4 +155,56 @@ output "cache_ip" {
 resource "google_container_registry" "registry" {
   project  = var.projectName
   location = "EU"
+}
+
+# CLOUD RUN
+
+resource "google_project_service" "run_api" {
+  service = "run.googleapis.com"
+
+  disable_on_destroy = true
+}
+
+resource "google_cloud_run_service" "run_service" {
+  name     = var.projectName
+  location = var.region
+
+  template {
+    spec {
+      containers {
+        image = "us-docker.pkg.dev/cloudrun/container/hello:latest"
+#        image = "gcr.io/slmonitor/slmonitor-app:latest"
+        env {
+          name = "DB_HOST"
+          value = google_sql_database_instance.postgresql.ip_address[0].ip_address
+        }
+        env {
+          name = "CACHE_HOST"
+          value = google_redis_instance.slmonitor_cache.host
+        }
+        env {
+          name = "TRAFFIC_API_AUTH_KEY"
+          value = "0e7862ebcacf4d7a90c2a90a443bca3f"
+        }
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  depends_on = [google_project_service.run_api]
+}
+
+resource "google_cloud_run_service_iam_member" "run_all_users" {
+  service  = google_cloud_run_service.run_service.name
+  location = google_cloud_run_service.run_service.location
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+output "cloudrun_url" {
+  value = google_cloud_run_service.run_service.status[0].url
 }
