@@ -22,11 +22,10 @@ type RedisClient struct {
 
 var Instance Client
 
-func InitClient(host, port, password string) {
+func InitClient(host, port string) {
 	i := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", host, port),
-		Password: password,
-		DB:       0, // use default DB
+		Addr: fmt.Sprintf("%s:%s", host, port),
+		DB:   0, // use default DB,
 	})
 	Instance = &RedisClient{i}
 }

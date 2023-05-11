@@ -14,7 +14,6 @@ database:
 cache:
   host: localhost # env CACHE_HOST
   port: 6379
-  password:
 traffic_api:
   authKey: # env TRAFFIC_API_AUTH_KEY
   url: https://api.trafikinfo.trafikverket.se/v2/data.json
