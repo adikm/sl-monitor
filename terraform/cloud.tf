@@ -25,56 +25,38 @@ resource "google_compute_network" "vpc_network" {
   name = "slmonitor-network"
 }
 
-resource "google_compute_firewall" "allow_ssh" {
-  name          = "allow-ssh"
-  network       = google_compute_network.vpc_network.name
-  target_tags   = ["allow-ssh"]
-  source_ranges = [var.ip_access]
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
+resource "google_vpc_access_connector" "connector" {
+  provider      = google-beta
+  name          = "${var.projectName}-conn"
+  region        = var.region
+  project       = var.projectName
+  ip_cidr_range = "10.8.0.0/28"
+  network       = google_compute_network.vpc_network.self_link
 }
 
-# VM
-
-resource "google_compute_address" "static_ip" {
-  name = "slmonitor-instance"
+resource "google_compute_global_address" "private_ip_block" {
+  name         = "private-ip-block"
+  purpose      = "VPC_PEERING"
+  address_type = "INTERNAL"
+  ip_version   = "IPV4"
+  prefix_length = 20
+  network       = google_compute_network.vpc_network.self_link
 }
-
-resource "google_compute_instance" "vm_instance" {
-  name         = "slmonitor-instance"
-  machine_type = "e2-micro"
-  tags         = ["web", "dev", "allow-ssh"]
-
-  metadata = {
-    ssh-keys = "${data.google_client_openid_userinfo.me.email}:${tls_private_key.ssh.public_key_openssh}"
-  }
-
-
-  boot_disk {
-    initialize_params {
-      image = "ubuntu-minimal-2204-lts"
-    }
-  }
-
-  network_interface {
-    network = google_compute_network.vpc_network.name
-    access_config {
-      nat_ip = google_compute_address.static_ip.address
-    }
-  }
-
-  allow_stopping_for_update = true
+resource "google_service_networking_connection" "private_vpc_connection" {
+  network                 = google_compute_network.vpc_network.self_link
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.private_ip_block.name]
 }
-
-output "vm_ip" {
-  description = "The IP address of the VM instance."
-  value       = google_compute_address.static_ip.address
-}
-
-
+#resource "google_compute_firewall" "allow_ssh" {
+#  name        = "allow-ssh"
+#  network     = google_compute_network.vpc_network.name
+#  direction   = "INGRESS"
+#  allow {
+#    protocol = "tcp"
+#    ports    = ["22"]
+#  }
+#  target_tags = ["ssh-enabled"]
+#}
 # PostgreSQL
 
 resource "google_sql_database_instance" "postgresql" {
@@ -83,6 +65,7 @@ resource "google_sql_database_instance" "postgresql" {
   project             = var.projectName
   region              = var.region
   database_version    = "POSTGRES_11"
+  depends_on       = [google_service_networking_connection.private_vpc_connection]
 
   settings {
     tier              = "db-f1-micro"
@@ -106,9 +89,10 @@ resource "google_sql_database_instance" "postgresql" {
     }
 
     ip_configuration {
-      ipv4_enabled = true
+      ipv4_enabled    = true
+      private_network = google_compute_network.vpc_network.self_link
       authorized_networks {
-        value = var.ip_access
+        value = "0.0.0.0/0"
       }
     }
   }
@@ -121,6 +105,7 @@ resource "google_sql_database" "postgresql_db" {
   project  = var.projectName
   instance = google_sql_database_instance.postgresql.name
   charset  = "UTF8"
+
 }
 
 resource "google_sql_user" "postgresql_user" {
@@ -132,7 +117,7 @@ resource "google_sql_user" "postgresql_user" {
 
 output db_instance_ip {
   description = "The IP address of the master database instance"
-  value       = google_sql_database_instance.postgresql.ip_address[0]
+  value       = google_sql_database_instance.postgresql.ip_address
 }
 
 # REDIS
@@ -172,20 +157,27 @@ resource "google_cloud_run_service" "run_service" {
   template {
     spec {
       containers {
-        image = "us-docker.pkg.dev/cloudrun/container/hello:latest"
-#        image = "gcr.io/slmonitor/slmonitor-app:latest"
+        image = "gcr.io/slmonitor/slmonitor-app:latest"
         env {
-          name = "DB_HOST"
-          value = google_sql_database_instance.postgresql.ip_address[0].ip_address
+          name  = "DB_HOST"
+          value = "10.80.160.3"
         }
         env {
-          name = "CACHE_HOST"
+          name  = "CACHE_HOST"
           value = google_redis_instance.slmonitor_cache.host
         }
         env {
-          name = "TRAFFIC_API_AUTH_KEY"
+          name  = "TRAFFIC_API_AUTH_KEY"
           value = "0e7862ebcacf4d7a90c2a90a443bca3f"
         }
+      }
+    }
+    metadata {
+      annotations = {
+        "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.self_link
+        "run.googleapis.com/vpc-access-egress"    = "private-ranges-only"
+        "run.googleapis.com/cloudsql-instances"   = google_sql_database_instance.postgresql.connection_name
+
       }
     }
   }
@@ -203,8 +195,4 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
   location = google_cloud_run_service.run_service.location
   role     = "roles/run.invoker"
   member   = "allUsers"
-}
-
-output "cloudrun_url" {
-  value = google_cloud_run_service.run_service.status[0].url
 }
