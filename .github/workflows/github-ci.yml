@@ -47,11 +47,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push Docker image to GCR
+      - name: Build and push Docker image to Container Registry
         run: |-
           gcloud auth configure-docker --quiet
           docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}-app:latest .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}-app:latest
 
-      - name: Deploy Docker image
-        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image ${{ secrets.GCP_PROJECT_ID }}-app --region europe-central2 --platform managed
+      - name: Deploy Docker image to Cloud Run
+        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image gcr.io/${{ secrets.GCP_PROJECT_ID }}//${{ secrets.GCP_PROJECT_ID }}-app:latest --region europe-central2 --platform managed
