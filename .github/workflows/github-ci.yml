@@ -54,4 +54,4 @@ jobs:
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}-app:latest
 
       - name: Deploy Docker image to Cloud Run
-        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image gcr.io/${{ secrets.GCP_PROJECT_ID }}//${{ secrets.GCP_PROJECT_ID }}-app:latest --region europe-central2 --platform managed
+        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}-app:latest --region europe-central2 --platform managed
