@@ -2,6 +2,7 @@ package trafikverket
 
 import (
 	"encoding/json"
+	"log"
 	"sl-monitor/internal/cache"
 	"time"
 )
@@ -14,8 +15,8 @@ var cachedStation struct {
 // FetchStations fetches and caches result for 24 hours
 func (s *APIService) FetchStations() ([]Station, error) {
 	value := cache.Instance.FetchValue("stations")
-	result := new(stationsResult)
 	if value == "" {
+		result := new(stationsResult)
 		request := buildStationsRequest(s.authKey)
 		err := s.remoteClient.post(&request, &result)
 		if err != nil {
@@ -27,11 +28,13 @@ func (s *APIService) FetchStations() ([]Station, error) {
 		return stations, nil
 	}
 
+	var result []Station
 	err := json.Unmarshal([]byte(value), &result)
 	if err != nil {
+		log.Printf("Error during unmarshalling from cache %s\n", err)
 		return nil, err
 	}
-	return result.stations(), nil
+	return result, nil
 }
 
 func buildStationsRequest(authKey string) request {
