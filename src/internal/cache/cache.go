@@ -33,7 +33,7 @@ func InitClient(host, port string) {
 func (c *RedisClient) FetchValue(key string) string {
 	val, err := c.instance.Get(ctx, key).Result()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error during fetching value %s: %s\n", key, err)
 		return ""
 	}
 	return val
@@ -42,7 +42,7 @@ func (c *RedisClient) FetchValue(key string) string {
 func (c *RedisClient) SetValue(key, value string, expiration time.Duration) bool {
 	err := c.instance.Set(ctx, key, value, expiration).Err()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error during setting value %s: %s\n", key, err)
 		return false
 	}
 	return true
@@ -51,7 +51,7 @@ func (c *RedisClient) SetValue(key, value string, expiration time.Duration) bool
 func (c *RedisClient) DeleteValue(key string) {
 	err := c.instance.Del(ctx, key).Err()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error during deleting value %s: %s\n", key, err)
 	}
 }
 
