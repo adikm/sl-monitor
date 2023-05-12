@@ -1,5 +1,4 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+# This workflow will run the tests, build Docker image, push it to Container Registry, and deploy to Cloud Run
 
 name: Test & deploy
 
@@ -41,9 +40,9 @@ jobs:
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: 'projects/808738102708/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-          service_account: 'github@slmonitor.iam.gserviceaccount.com'
-          project_id: slmonitor
+          workload_identity_provider: ${{ secrets.WORKLOAD_ID_PROVIDER }}
+          service_account: 'github@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -51,5 +50,8 @@ jobs:
       - name: Build and push Docker image to GCR
         run: |-
           gcloud auth configure-docker --quiet
-          docker build -t gcr.io/slmonitor/slmonitor-app:latest .
-          docker push gcr.io/slmonitor/slmonitor-app:latest
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}-app:latest .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}-app:latest
+
+      - name: Deploy Docker image
+        run: gcloud run deploy ${{ secrets.GCP_PROJECT_ID }} --image ${{ secrets.GCP_PROJECT_ID }}-app --region europe-central2 --platform managed
