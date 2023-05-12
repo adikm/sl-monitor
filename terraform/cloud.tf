@@ -1,3 +1,19 @@
+data "google_client_openid_userinfo" "me" {}
+
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "4.64.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "3.1.0"
+    }
+  }
+  required_version = ">= 0.15.0"
+}
+
 provider "google" {
   project = var.projectName
   region  = var.region
@@ -35,10 +51,10 @@ resource "google_vpc_access_connector" "connector" {
 }
 
 resource "google_compute_global_address" "private_ip_block" {
-  name         = "private-ip-block"
-  purpose      = "VPC_PEERING"
-  address_type = "INTERNAL"
-  ip_version   = "IPV4"
+  name          = "private-ip-block"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  ip_version    = "IPV4"
   prefix_length = 20
   network       = google_compute_network.vpc_network.self_link
 }
@@ -47,16 +63,8 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_block.name]
 }
-#resource "google_compute_firewall" "allow_ssh" {
-#  name        = "allow-ssh"
-#  network     = google_compute_network.vpc_network.name
-#  direction   = "INGRESS"
-#  allow {
-#    protocol = "tcp"
-#    ports    = ["22"]
-#  }
-#  target_tags = ["ssh-enabled"]
-#}
+
+
 # PostgreSQL
 
 resource "google_sql_database_instance" "postgresql" {
@@ -65,7 +73,7 @@ resource "google_sql_database_instance" "postgresql" {
   project             = var.projectName
   region              = var.region
   database_version    = "POSTGRES_11"
-  depends_on       = [google_service_networking_connection.private_vpc_connection]
+  depends_on          = [google_service_networking_connection.private_vpc_connection]
 
   settings {
     tier              = "db-f1-micro"
@@ -160,7 +168,7 @@ resource "google_cloud_run_service" "run_service" {
         image = "gcr.io/slmonitor/slmonitor-app:latest"
         env {
           name  = "DB_HOST"
-          value = "10.80.160.3"
+          value = [for each in google_sql_database_instance.postgresql.ip_address: each.ip_address if each.type == "PRIVATE"][0]
         }
         env {
           name  = "CACHE_HOST"
