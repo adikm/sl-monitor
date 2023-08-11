@@ -29,7 +29,7 @@ func main() {
 	*/
 	db := prepareDatabase(cfg.Database)
 	defer db.Close()
-	cache.InitClient(cfg.Cache.Host, strconv.Itoa(cfg.Cache.Port), cfg.Cache.Password)
+	cache.InitClient(cfg.Cache.Host, strconv.Itoa(cfg.Cache.Port))
 
 	/*
 		BUSINESS

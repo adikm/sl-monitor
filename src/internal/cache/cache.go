@@ -22,11 +22,10 @@ type RedisClient struct {
 
 var Instance Client
 
-func InitClient(host, port, password string) {
+func InitClient(host, port string) {
 	i := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", host, port),
-		Password: password,
-		DB:       0, // use default DB
+		Addr: fmt.Sprintf("%s:%s", host, port),
+		DB:   0, // use default DB,
 	})
 	Instance = &RedisClient{i}
 }
@@ -34,7 +33,7 @@ func InitClient(host, port, password string) {
 func (c *RedisClient) FetchValue(key string) string {
 	val, err := c.instance.Get(ctx, key).Result()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error during fetching value %s: %s\n", key, err)
 		return ""
 	}
 	return val
@@ -43,7 +42,7 @@ func (c *RedisClient) FetchValue(key string) string {
 func (c *RedisClient) SetValue(key, value string, expiration time.Duration) bool {
 	err := c.instance.Set(ctx, key, value, expiration).Err()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error during setting value %s: %s\n", key, err)
 		return false
 	}
 	return true
@@ -52,7 +51,7 @@ func (c *RedisClient) SetValue(key, value string, expiration time.Duration) bool
 func (c *RedisClient) DeleteValue(key string) {
 	err := c.instance.Del(ctx, key).Err()
 	if err != nil {
-		log.Println(err)
+		log.Printf("Error during deleting value %s: %s\n", key, err)
 	}
 }
 

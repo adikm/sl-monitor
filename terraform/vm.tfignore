@@ -1,0 +1,65 @@
+# VM used only for SSH tunnelling
+
+provider "tls" {
+  // no config needed
+}
+
+resource "tls_private_key" "ssh" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "local_file" "ssh_private_key_pem" {
+  content         = tls_private_key.ssh.private_key_pem
+  filename        = ".ssh/google_compute_engine"
+  file_permission = "0600"
+}
+
+# VM
+
+resource "google_compute_firewall" "allow_ssh" {
+  name    = "allow-ssh"
+  network = google_compute_network.vpc_network.name
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ssh-enabled"]
+}
+
+
+resource "google_compute_address" "static_ip" {
+  name = "slmonitor-instance"
+}
+
+resource "google_compute_instance" "vm_instance" {
+  name         = "slmonitor-instance"
+  machine_type = "e2-micro"
+  tags         = ["ssh-enabled"]
+
+  metadata = {
+    ssh-keys = "${data.google_client_openid_userinfo.me.email}:${tls_private_key.ssh.public_key_openssh}"
+  }
+
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-minimal-2204-lts"
+    }
+  }
+
+  network_interface {
+    network = google_compute_network.vpc_network.name
+    access_config {
+      nat_ip = google_compute_address.static_ip.address
+    }
+  }
+
+  allow_stopping_for_update = true
+}
+
+output "vm_ip" {
+  description = "The IP address of the VM instance."
+  value       = google_compute_address.static_ip.address
+}

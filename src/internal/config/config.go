@@ -28,9 +28,8 @@ type Database struct {
 }
 
 type cache struct {
-	Host     string `yaml:"host" envconfig:"CACHE_HOST"`
-	Port     int    `yaml:"port"`
-	Password string `yaml:"password"`
+	Host string `yaml:"host" envconfig:"CACHE_HOST"`
+	Port int    `yaml:"port"`
 }
 
 type trafficAPI struct {
