@@ -1,5 +1,5 @@
 variable "projectName" {
-  default = "slmonitor"
+  default = "slmonitor-398408"
 }
 
 variable "region" {
