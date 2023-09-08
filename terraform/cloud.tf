@@ -158,6 +158,12 @@ resource "google_project_service" "run_api" {
   disable_on_destroy = true
 }
 
+resource "google_project_iam_member" "run_gcr" {
+  project = var.projectName
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:service-${var.gcp_project_number}@serverless-robot-prod.iam.gserviceaccount.com"
+}
+
 resource "google_cloud_run_service" "run_service" {
   name     = var.projectName
   location = var.region
@@ -165,7 +171,7 @@ resource "google_cloud_run_service" "run_service" {
   template {
     spec {
       containers {
-        image = "gcr.io/slmonitor/slmonitor-app:latest"
+        image = "gcr.io/${var.projectName}/${var.projectName}-app:latest"
         env {
           name  = "DB_HOST"
           value = [for each in google_sql_database_instance.postgresql.ip_address: each.ip_address if each.type == "PRIVATE"][0]

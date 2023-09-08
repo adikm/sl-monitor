@@ -13,3 +13,7 @@ variable "zone" {
 variable "ip_access" {
   default = "0.0.0.0/0"
 }
+
+variable "gcp_project_number" {
+  default = "640049381499"
+}

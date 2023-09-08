@@ -41,7 +41,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_ID_PROVIDER }}
-          service_account: 'github@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
+          service_account: 'slmonitor@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Set up Docker Buildx
