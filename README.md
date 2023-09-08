@@ -16,6 +16,9 @@ The only prerequisite is Docker installed on your machine. Also you should get T
 
 ### Terraforming Google Cloud Platform
 
+First, enable **Compute Engine API**, **Billing API**, **Container Registry API**,  **Memorystore for Redis API**,  **Service Networking API**,  **Serverless VPC Access API** in Google Cloud Platform
+
+
 Login to GCP
 
 ```shell
@@ -26,10 +29,14 @@ and then initialize Terraform:
 
 ```shell
 terraform init
+```
+
+To set up whole infrastructure from scratch, use
+```shell
 terraform apply
 ```
 
-To synchronize with remote infrastructure, run:
+or to synchronize with existing remote infrastructure, run:
 
 ```shell
 export PROJECT_ID=slmonitor
